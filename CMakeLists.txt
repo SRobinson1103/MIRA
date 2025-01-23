@@ -1,7 +1,4 @@
-﻿# CMakeList.txt : CMake project for MIRA, include source and define
-# project specific logic here.
-#
-cmake_minimum_required (VERSION 3.8)
+﻿cmake_minimum_required (VERSION 3.8)
 
 # Enable Hot Reload for MSVC compilers if supported.
 if (POLICY CMP0141)
@@ -11,19 +8,37 @@ endif()
 
 project ("MIRA")
 
-include_directories(${PROJECT_SOURCE_DIR}/include)
-
 set(SOURCE_FILES
-        ${CMAKE_SOURCE_DIR}/src/main.cpp
-        ${CMAKE_SOURCE_DIR}/src/MIRAVector.cpp
-        ${CMAKE_SOURCE_DIR}/include/MIRAVector.h
+        ${PROJECT_SOURCE_DIR}/src/MIRAMatrix.cpp
+        ${PROJECT_SOURCE_DIR}/src/MIRAVector.cpp
+        ${PROJECT_SOURCE_DIR}/include/MIRAVector.h
+        ${PROJECT_SOURCE_DIR}/include/MIRAMatrix.h
     )
 
-# Add source to this project's executable.
-add_executable (MIRA ${SOURCE_FILES})
+include_directories(${PROJECT_SOURCE_DIR}/include)
+
+# Create executable
+add_executable (MIRA src/main.cpp ${SOURCE_FILES})
+
+############################ tests ############################
+set(SOURCE_FILES_TEST
+    ${CMAKE_SOURCE_DIR}/UnitTests/UnitTestMain.cpp
+    ${CMAKE_SOURCE_DIR}/UnitTests/include/MIRAMathTests.h
+    ${CMAKE_SOURCE_DIR}/UnitTests/include/MIRATestFramework.h
+    ${CMAKE_SOURCE_DIR}/src/MIRAMatrix.cpp
+    ${CMAKE_SOURCE_DIR}/src/MIRAVector.cpp
+    ${CMAKE_SOURCE_DIR}/include/MIRAVector.h
+    ${CMAKE_SOURCE_DIR}/include/MIRAMatrix.h
+)
+
+include_directories(${CMAKE_SOURCE_DIR}/UnitTests/include)
+
+# Create a test executable
+add_executable(MIRA_tests ${SOURCE_FILES_TEST})
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET MIRA PROPERTY CXX_STANDARD 20)
+  set_property(TARGET MIRA_tests PROPERTY CXX_STANDARD 20)
 endif()
 
 # TODO: Add tests and install targets if needed.
