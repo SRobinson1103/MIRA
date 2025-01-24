@@ -66,18 +66,17 @@ TEST_CASE(SphereCollider_AABB)
 
     Collider sphereCollider(Collider::SPHERE, &body);
     sphereCollider.SetSphereRadius(2.0f);
-    //SphereCollider sphere(&body, 2.0f); // Radius = 2.0
 
     AABB aabb = ComputeAABB(sphereCollider);
 
     // Test all components of the AABB
-    ASSERT_FLOAT_EQUAL(aabb.min.x, 1.0f - 2.0f); // -1.0f
-    ASSERT_FLOAT_EQUAL(aabb.min.y, 2.0f - 2.0f); // 0.0f
-    ASSERT_FLOAT_EQUAL(aabb.min.z, 3.0f - 2.0f); // 1.0f
+    ASSERT_EQUAL(aabb.min.x, 1.0f - 2.0f); // -1.0f
+    ASSERT_EQUAL(aabb.min.y, 2.0f - 2.0f); // 0.0f
+    ASSERT_EQUAL(aabb.min.z, 3.0f - 2.0f); // 1.0f
            
-    ASSERT_FLOAT_EQUAL(aabb.max.x, 1.0f + 2.0f); // 3.0f
-    ASSERT_FLOAT_EQUAL(aabb.max.y, 2.0f + 2.0f); // 4.0f (failure point)
-    ASSERT_FLOAT_EQUAL(aabb.max.z, 3.0f + 2.0f); // 5.0f
+    ASSERT_EQUAL(aabb.max.x, 1.0f + 2.0f); // 3.0f
+    ASSERT_EQUAL(aabb.max.y, 2.0f + 2.0f); // 4.0f
+    ASSERT_EQUAL(aabb.max.z, 3.0f + 2.0f); // 5.0f
 }
 
 TEST_CASE(BoxCollider_AABB)
@@ -112,7 +111,7 @@ TEST_CASE(SphereCollider_NegativeRadius)
     sphereCollider.SetSphereRadius(-1.0f);
 
     AABB aabb = ComputeAABB(sphereCollider);
-    ASSERT_TRUE(aabb.min.x > aabb.max.x); // AABB is invalid (test should fail)
+    ASSERT_TRUE(aabb.min.x > aabb.max.x);
 }
 
 TEST_CASE(SphereSphere_Collision)
@@ -131,7 +130,7 @@ TEST_CASE(SphereSphere_Collision)
 
     ASSERT_TRUE(isColliding);
     ASSERT_NEAR(info.depth, 1.0f, 0.0001f); // Distance = 3.0, sum of radii = 4.0 -> depth = 1.0
-    ASSERT_EQUAL(info.normal.x, 1.0f); // Collision normal points from sphere1 to sphere2
+    ASSERT_EQUAL(info.normal.x, 1.0f); // Collision normal points from sphere 1 to sphere 2
 }
 
 TEST_CASE(SphereSphere_NoCollision)
@@ -276,7 +275,7 @@ TEST_CASE(BoxBox_Collision)
 
     ASSERT_TRUE(isColliding);
     ASSERT_NEAR(info.depth, 0.5f, 0.0001f); // Overlap = (1 + 1) - 1.5 = 0.5
-    ASSERT_EQUAL(info.normal.x, 1.0f); // Normal points from box1 to box2
+    ASSERT_EQUAL(info.normal.x, 1.0f); // Normal points from box 1 to box 2
 }
 
 TEST_CASE(BoxBox_Collision_Edge)
@@ -299,7 +298,7 @@ TEST_CASE(BoxBox_Collision_Edge)
 
 TEST_CASE(ResolveCollision_Impulse)
 {
-    RigidBody body1(1.0f, 0.5f); // Mass = 1.0, restitution = 0.5
+    RigidBody body1(1.0f, 0.5f);
     RigidBody body2(1.0f, 0.5f);
     body1.velocity = Vector3(2.0f, 0.0f, 0.0f);
     body2.velocity = Vector3(-1.0f, 0.0f, 0.0f);
@@ -333,8 +332,8 @@ TEST_CASE(ResolveCollision_PositionCorrection)
 
     // Position correction:
     // correction = (0.5 - 0.01) * 0.2 / (1 + 1) ~= 0.049
-    // body1.pos -= 0.049 / 1 -> ~-0.049
-    // body2.pos += 0.049 / 1 -> ~1.5 + 0.049 = 1.549
+    // body1.pos -= 0.049 / 1 -> ~ -0.049
+    // body2.pos += 0.049 / 1 -> ~ 1.5 + 0.049 = 1.549
     ASSERT_NEAR(body1.position.x, -0.049f, 0.001f);
     ASSERT_NEAR(body2.position.x, 1.549f, 0.001f);
 }

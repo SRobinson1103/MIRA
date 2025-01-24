@@ -18,7 +18,7 @@ public:
     // Subtraction
     Quaternion operator-(const Quaternion& other) const;
 
-    // Multiplication (Hamilton product)
+    // Multiplication
     Quaternion operator*(const Quaternion& other) const;
 
     // Conjugate
@@ -36,11 +36,11 @@ public:
     // Convert to rotation matrix
     Matrix4 ToMatrix() const;
 
-    // Spherical interpolation (Slerp)
+    // Spherical interpolation
     static Quaternion Slerp(const Quaternion& a, const Quaternion& b, float t);
 
     static Quaternion FromAxisAngle(const Vector3& axis, float angle);
 };
-}
+} //End namespace
 
 #endif

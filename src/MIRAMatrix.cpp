@@ -4,13 +4,11 @@ using namespace MIRA;
 
 Matrix4::Matrix4()
 {
-    for (int i = 0; i < 4; ++i)
-    {
-        for (int j = 0; j < 4; ++j)
-        {
-            m[i][j] = (i == j) ? 1.0f : 0.0f;
-        }
-    }
+    memset(m, 0, 16 * sizeof(float));
+    m[0][0] = 1.0f;
+    m[1][1] = 1.0f;
+    m[2][2] = 1.0f;
+    m[3][3] = 1.0f;
 }
 
 Matrix4 Matrix4::operator*(const Matrix4& other) const
@@ -65,7 +63,7 @@ Matrix4 Matrix4::Inverse() const
         float pivot = temp[i][i];
         if (std::fabs(pivot) < 1e-6f)
         {
-            // Matrix is singular (non-invertible)
+            // Matrix is not invertible
             return Matrix4();
         }
 

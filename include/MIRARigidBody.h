@@ -12,7 +12,7 @@ public:
     Vector3 velocity;
     Vector3 force;
     float mass;
-    float restitution; // Bounciness (0.0 = no bounce, 1.0 = perfect bounce)
+    float restitution; // Bounciness, 0.0 = no bounce, 1.0 = perfect bounce
 
     RigidBody(float mass = 1.0f, float restitution = 0.5f);
 

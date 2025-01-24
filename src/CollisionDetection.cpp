@@ -47,14 +47,14 @@ bool CheckCollision(const Collider& a, const Collider& b, CollisionInfo& info)
 bool SphereSphereCollision(const Collider& a, const Collider& b, CollisionInfo& info)
 {
     Vector3 delta = b.body->position - a.body->position;
-    float distanceSq = delta.Dot(delta); // Squared distance
+    float distanceSq = delta.Dot(delta);
     float radiusSum = a.GetSphereRadius() + b.GetSphereRadius();
     float radiusSumSq = radiusSum * radiusSum;
 
     if (distanceSq < radiusSumSq)
     {
         float distance = std::sqrt(distanceSq);
-        info.normal = delta / distance; // Faster than Normalized() (avoids another sqrt)
+        info.normal = delta / distance;
         info.depth = radiusSum - distance;
         return true;
     }
@@ -68,11 +68,11 @@ bool SphereBoxCollision(const Collider& sphere, const Collider& box, CollisionIn
     const Vector3& boxHalf = box.GetBoxHalfExtents();
     const float radius = sphere.GetSphereRadius();
 
-    // Precompute box bounds
+    // Compute box bounds
     const Vector3 boxMin = boxCenter - boxHalf;
     const Vector3 boxMax = boxCenter + boxHalf;
 
-    // Find closest point on box to sphere (branchless)
+    // Find closest point on box to sphere
     Vector3 closestPoint;
     closestPoint.x = std::clamp(sphereCenter.x, boxMin.x, boxMax.x);
     closestPoint.y = std::clamp(sphereCenter.y, boxMin.y, boxMax.y);
@@ -113,7 +113,7 @@ bool BoxBoxCollision(const Collider& a, const Collider& b, CollisionInfo& info)
     // Early exit if any axis has no overlap
     if (penetration.x < 0 || penetration.y < 0 || penetration.z < 0) return false;
 
-    // Find axis with minimal penetration (branchless)
+    // Find axis with minimal penetration
     int axis = 0;
     float minPenetration = penetration.x;
     if (penetration.y < minPenetration)
@@ -134,7 +134,6 @@ bool BoxBoxCollision(const Collider& a, const Collider& b, CollisionInfo& info)
 
 void ResolveCollision(RigidBody& a, RigidBody& b, const CollisionInfo& info)
 {
-    // Relative velocity = b.velocity - a.velocity
     Vector3 relativeVel = b.velocity - a.velocity;
     float velAlongNormal = relativeVel.Dot(info.normal);
 
@@ -145,7 +144,7 @@ void ResolveCollision(RigidBody& a, RigidBody& b, const CollisionInfo& info)
     float e = std::min(a.restitution, b.restitution);
     float j = -(1 + e) * velAlongNormal;
 
-    // Handle infinite mass (mass = 0.0f)
+    // Handle mass = 0.0f
     float invMassA = (a.mass == 0.0f) ? 0.0f : 1.0f / a.mass;
     float invMassB = (b.mass == 0.0f) ? 0.0f : 1.0f / b.mass;
     j /= (invMassA + invMassB);
@@ -155,7 +154,7 @@ void ResolveCollision(RigidBody& a, RigidBody& b, const CollisionInfo& info)
     a.velocity = a.velocity - (impulse * invMassA);
     b.velocity = b.velocity + (impulse * invMassB);
 
-    // Positional correction (optional)
+    // Position correction 
     const float percent = 0.2f;
     const float slop = 0.01f;
     float correction = std::max(info.depth - slop, 0.0f) / (invMassA + invMassB) * percent;

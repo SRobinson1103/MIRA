@@ -16,16 +16,19 @@ bool CheckAABBOverlap(const AABB& a, const AABB& b);
 
 struct CollisionInfo
 {
-    MIRA::Vector3 normal; // Collision normal (direction to resolve)
+    MIRA::Vector3 normal; // Collision normal, direction to resolve
     float depth;          // Penetration depth
 };
 
 bool CheckCollision(const MIRA::Collider& a, const MIRA::Collider& b, CollisionInfo& info);
 
+//Distance Check
 bool SphereSphereCollision(const MIRA::Collider& a, const MIRA::Collider& b, CollisionInfo& info);
 
+// Closest Point Check
 bool SphereBoxCollision(const MIRA::Collider& sphere, const MIRA::Collider& box, CollisionInfo& info);
 
+// Separating Axis Theorem (SAT)
 bool BoxBoxCollision(const MIRA::Collider& a, const MIRA::Collider& b, CollisionInfo& info);
 
 void ResolveCollision(MIRA::RigidBody& a, MIRA::RigidBody& b, const CollisionInfo& info);

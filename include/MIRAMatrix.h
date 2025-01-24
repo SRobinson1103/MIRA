@@ -8,9 +8,9 @@ namespace MIRA
 class Matrix4
 {
 public:
-    float m[4][4]; // 4x4 matrix
+    float m[4][4];
 
-    // Constructor (initializes to identity matrix)
+    // Initializes to identity matrix
     Matrix4();
 
     // Matrix multiplication
@@ -25,13 +25,13 @@ public:
     // Create a translation matrix
     static Matrix4 Translate(const Vector3& translation);
 
-    // Create a rotation matrix (around X-axis)
+    // Create a rotation matrix around X-axis
     static Matrix4 RotateX(float angle);
 
-    // Create a rotation matrix (around Y-axis)
+    // Create a rotation matrix around Y-axis
     static Matrix4 RotateY(float angle);
 
-    // Create a rotation matrix (around Z-axis)
+    // Create a rotation matrix around Z-axis
     static Matrix4 RotateZ(float angle);
 
     // Create a scaling matrix

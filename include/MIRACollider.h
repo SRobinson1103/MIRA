@@ -7,13 +7,13 @@
 
 namespace MIRA
 {
-// avoids polymorphism for performance improvements
+// Avoids polymorphism for slight performance gains
 class Collider
 {
 public:
     enum Type { SPHERE, BOX };
     Type type;
-    RigidBody* body;
+    RigidBody* body; // Associated rigid body
 
     Collider(Type type, RigidBody* body);
 
@@ -25,8 +25,8 @@ private:
     };
 
 public:
-    // Debug-only accessors and setters with validation
-#if !defined(NDEBUG) // Active in debug builds
+    // Debug only accessors and setters with validation
+#if !defined(NDEBUG)
     float GetSphereRadius() const
     {
         assert(type == SPHERE && "Collider is not a sphere!");
@@ -50,7 +50,7 @@ public:
         assert(type == BOX && "Collider is not a box!");
         box.halfExtents = halfExtents;
     }
-#else // Release: no checks, direct access and assigmnent
+#else // Release
     float GetSphereRadius() const { return sphere.radius; }
     const Vector3& GetBoxHalfExtents() const { return box.halfExtents; }
     void SetSphereRadius(float radius) { sphere.radius = radius; }
@@ -63,7 +63,7 @@ class Collider
 public:
     enum class Type { SPHERE, BOX };
     Type type;
-    RigidBody* body; // Associated rigid body
+    RigidBody* body;
 
     Collider(Type type, RigidBody* body);
     virtual ~Collider() = default;
@@ -80,7 +80,7 @@ public:
 class BoxCollider : public Collider
 {
 public:
-    Vector3 halfExtents; // Half the size of the box (e.g., (1,1,1) for a 2x2x2 box)
+    Vector3 halfExtents;
 
     BoxCollider(RigidBody* body, const Vector3& halfExtents);
 };*/
