@@ -1,10 +1,28 @@
 #include "MIRATestFramework.h"
-#include "MIRAMatrix.h"
+
 #include "MIRAVector.h"
+#include "MIRAMatrix.h"
+#include "MIRAQuaternion.h"
 
 using namespace MIRA;
 
 #pragma region vector
+TEST_CASE(Vector3_ScalarMult)
+{
+    float scalar = 2.0f;
+    Vector3 v(1.0f, 2.0f, 3.0f);
+    Vector3 result1 = v * scalar;
+    Vector3 result2 = scalar * v;
+
+    ASSERT_EQUAL(result1.x, 2.0f);
+    ASSERT_EQUAL(result1.y, 4.0f);
+    ASSERT_EQUAL(result1.z, 6.0f);
+
+    ASSERT_EQUAL(result2.x, 2.0f);
+    ASSERT_EQUAL(result2.y, 4.0f);
+    ASSERT_EQUAL(result2.z, 6.0f);
+}
+
 TEST_CASE(Vector3_Addition)
 {
     Vector3 v1(1.0f, 2.0f, 3.0f);
@@ -25,6 +43,87 @@ TEST_CASE(Vector3_Subtraction)
     ASSERT_EQUAL(result.x, 3.0f);
     ASSERT_EQUAL(result.y, 3.0f);
     ASSERT_EQUAL(result.z, 3.0f);
+}
+
+TEST_CASE(Vector3_SubscriptOperator_ReadWrite)
+{
+    Vector3 vec(1.0f, 2.0f, 3.0f);
+
+    // Read
+    ASSERT_EQUAL(vec[0], 1.0f);
+    ASSERT_EQUAL(vec[1], 2.0f);
+    ASSERT_EQUAL(vec[2], 3.0f);
+
+    // Write
+    vec[0] = 10.0f;
+    vec[1] = 20.0f;
+    vec[2] = 30.0f;
+    ASSERT_EQUAL(vec.x, 10.0f);
+    ASSERT_EQUAL(vec.y, 20.0f);
+    ASSERT_EQUAL(vec.z, 30.0f);
+}
+
+TEST_CASE(Vector3_SubscriptOperator_OutOfRange)
+{
+    Vector3 vec;
+    bool exceptionThrown = false;
+    try
+    {
+        float val = vec[3]; // Invalid index
+    }
+    catch (const std::out_of_range&)
+    {
+        exceptionThrown = true;
+    }
+    ASSERT_TRUE(exceptionThrown);
+}
+
+TEST_CASE(Vector3_SubscriptOperator_Stress)
+{
+    Vector3 vec;
+    for (int i = 0; i < 3; ++i)
+    {
+        vec[i] = static_cast<float>(i);
+    }
+    ASSERT_EQUAL(vec.x, 0.0f);
+    ASSERT_EQUAL(vec.y, 1.0f);
+    ASSERT_EQUAL(vec.z, 2.0f);
+}
+
+TEST_CASE(Vector3_Abs_Positive)
+{
+    Vector3 vec(1.0f, 2.0f, 3.0f);
+    Vector3 result = vec.Abs();
+    ASSERT_EQUAL(result.x, 1.0f);
+    ASSERT_EQUAL(result.y, 2.0f);
+    ASSERT_EQUAL(result.z, 3.0f);
+}
+
+TEST_CASE(Vector3_Abs_Negative)
+{
+    Vector3 vec(-1.0f, -2.0f, -3.0f);
+    Vector3 result = vec.Abs();
+    ASSERT_EQUAL(result.x, 1.0f);
+    ASSERT_EQUAL(result.y, 2.0f);
+    ASSERT_EQUAL(result.z, 3.0f);
+}
+
+TEST_CASE(Vector3_Abs_Mixed)
+{
+    Vector3 vec(-5.0f, 0.0f, 3.0f);
+    Vector3 result = vec.Abs();
+    ASSERT_EQUAL(result.x, 5.0f);
+    ASSERT_EQUAL(result.y, 0.0f);
+    ASSERT_EQUAL(result.z, 3.0f);
+}
+
+TEST_CASE(Vector3_Abs_Zero)
+{
+    Vector3 vec(0.0f, -0.0f, 0.0f);
+    Vector3 result = vec.Abs();
+    ASSERT_EQUAL(result.x, 0.0f);
+    ASSERT_EQUAL(result.y, 0.0f);
+    ASSERT_EQUAL(result.z, 0.0f);
 }
 
 TEST_CASE(Vector3_DotProduct)
@@ -63,6 +162,36 @@ TEST_CASE(Vector3_Normalization)
     ASSERT_NEAR(result.x, 0.6f, 0.0001f); // 3/5 = 0.6
     ASSERT_NEAR(result.y, 0.8f, 0.0001f); // 4/5 = 0.8
     ASSERT_NEAR(result.z, 0.0f, 0.0001f); // 0/5 = 0
+}
+
+TEST_CASE(Vector3_CrossProduct_Orthogonal)
+{
+    Vector3 v1(1.0f, 0.0f, 0.0f);
+    Vector3 v2(0.0f, 1.0f, 0.0f);
+    Vector3 result = v1.Cross(v2);
+
+    ASSERT_EQUAL(result.x, 0.0f);
+    ASSERT_EQUAL(result.y, 0.0f);
+    ASSERT_EQUAL(result.z, 1.0f); // Cross product of X and Y is Z
+}
+
+TEST_CASE(Vector3_Normalization_UnitVector)
+{
+    Vector3 v(3.0f, 4.0f, 0.0f);
+    Vector3 result = v.Normalized();
+
+    ASSERT_NEAR(result.x, 0.6f, 0.0001f); // 3/5 = 0.6
+    ASSERT_NEAR(result.y, 0.8f, 0.0001f); // 4/5 = 0.8
+    ASSERT_NEAR(result.z, 0.0f, 0.0001f); // 0/5 = 0
+}
+
+TEST_CASE(Vector3_Distance)
+{
+    Vector3 v1(1.0f, 2.0f, 3.0f);
+    Vector3 v2(4.0f, 6.0f, 8.0f);
+    float result = Vector3::Distance(v1, v2);
+
+    ASSERT_NEAR(result, 7.0710678f, 0.0001f); // sqrt(3^2 + 4^2 + 5^2) = 7.0710678
 }
 #pragma endregion
 
@@ -132,5 +261,188 @@ TEST_CASE(Matrix4_Scaling)
     ASSERT_EQUAL(scale.m[0][0], 2.0f); // Scale in X
     ASSERT_EQUAL(scale.m[1][1], 3.0f); // Scale in Y
     ASSERT_EQUAL(scale.m[2][2], 4.0f); // Scale in Z
+}
+
+TEST_CASE(Matrix4_Inverse)
+{
+    Matrix4 mat;
+    mat.m[0][0] = 2.0f; mat.m[0][1] = 0.0f; mat.m[0][2] = 0.0f; mat.m[0][3] = 0.0f;
+    mat.m[1][0] = 0.0f; mat.m[1][1] = 2.0f; mat.m[1][2] = 0.0f; mat.m[1][3] = 0.0f;
+    mat.m[2][0] = 0.0f; mat.m[2][1] = 0.0f; mat.m[2][2] = 2.0f; mat.m[2][3] = 0.0f;
+    mat.m[3][0] = 0.0f; mat.m[3][1] = 0.0f; mat.m[3][2] = 0.0f; mat.m[3][3] = 2.0f;
+
+    Matrix4 inv = mat.Inverse();
+
+    ASSERT_EQUAL(inv.m[0][0], 0.5f);
+    ASSERT_EQUAL(inv.m[1][1], 0.5f);
+    ASSERT_EQUAL(inv.m[2][2], 0.5f);
+    ASSERT_EQUAL(inv.m[3][3], 0.5f);
+}
+
+TEST_CASE(Matrix4_Transpose)
+{
+    Matrix4 mat;
+    mat.m[0][1] = 2.0f;
+    mat.m[1][0] = 3.0f;
+    Matrix4 result = mat.Transpose();
+
+    ASSERT_EQUAL(result.m[0][1], 3.0f);
+    ASSERT_EQUAL(result.m[1][0], 2.0f);
+}
+
+TEST_CASE(Matrix4_RotationX)
+{
+    float angle = 3.14159f / 2.0f; // 90 degrees
+    Matrix4 result = Matrix4::RotateX(angle);
+
+    ASSERT_NEAR(result.m[1][1], 0.0f, 0.0001f); // cos(90°) = 0
+    ASSERT_NEAR(result.m[1][2], -1.0f, 0.0001f); // -sin(90°) = -1
+    ASSERT_NEAR(result.m[2][1], 1.0f, 0.0001f); // sin(90°) = 1
+    ASSERT_NEAR(result.m[2][2], 0.0f, 0.0001f); // cos(90°) = 0
+}
+
+TEST_CASE(Matrix4_Inverse_Identity)
+{
+    Matrix4 mat; // Identity matrix
+    Matrix4 result = mat.Inverse();
+
+    ASSERT_EQUAL(result.m[0][0], 1.0f);
+    ASSERT_EQUAL(result.m[1][1], 1.0f);
+    ASSERT_EQUAL(result.m[2][2], 1.0f);
+    ASSERT_EQUAL(result.m[3][3], 1.0f);
+}
+
+TEST_CASE(Matrix4_Inverse_Transform)
+{
+    Matrix4 translate = Matrix4::Translate(Vector3(2.0f, 3.0f, 4.0f));
+    Matrix4 invTranslate = translate.Inverse();
+    Matrix4 result = translate * invTranslate;
+
+    // The product should be the identity matrix
+    for (int i = 0; i < 4; ++i) 
+   {
+        for (int j = 0; j < 4; ++j)
+        {
+            if (i == j)
+            {
+                ASSERT_NEAR(result.m[i][j], 1.0f, 0.0001f);
+            }
+            else
+            {
+                ASSERT_NEAR(result.m[i][j], 0.0f, 0.0001f);
+            }
+        }
+    }
+}
+
+TEST_CASE(Matrix4_Inverse_Rotation)
+{
+    Matrix4 rot = Matrix4::RotateY(3.14159f / 2.0f); // 90-degree rotation
+    Matrix4 invRot = rot.Inverse(); // Should be -90 degrees
+
+    Vector3 original(1.0f, 0.0f, 0.0f);
+    Vector3 rotated = rot * original; // Rotate to (0, 0, -1)
+    Vector3 inverted = invRot * rotated; // Rotate back to (1, 0, 0)
+
+    ASSERT_NEAR(inverted.x, 1.0f, 0.0001f);
+    ASSERT_NEAR(inverted.y, 0.0f, 0.0001f);
+    ASSERT_NEAR(inverted.z, 0.0f, 0.0001f);
+}
+
+TEST_CASE(Matrix4_Vector3_Multiplication)
+{
+    Matrix4 mat = Matrix4::Translate(Vector3(2.0f, 3.0f, 4.0f));
+    Vector3 vec(1.0f, 1.0f, 1.0f);
+    Vector3 result = mat * vec;
+
+    ASSERT_NEAR(result.x, 3.0f, 0.0001f); // 1 + 2
+    ASSERT_NEAR(result.y, 4.0f, 0.0001f); // 1 + 3
+    ASSERT_NEAR(result.z, 5.0f, 0.0001f); // 1 + 4
+}
+#pragma endregion
+
+#pragma region quaternion
+TEST_CASE(Quaternion_Multiplication)
+{
+    Quaternion q1(1.0f, 2.0f, 3.0f, 4.0f);
+    Quaternion q2(5.0f, 6.0f, 7.0f, 8.0f);
+    Quaternion result = q1 * q2;
+
+    ASSERT_EQUAL(result.w, -60.0f);
+    ASSERT_EQUAL(result.x, 12.0f);
+    ASSERT_EQUAL(result.y, 30.0f);
+    ASSERT_EQUAL(result.z, 24.0f);
+}
+
+TEST_CASE(Quaternion_ToMatrix)
+{
+    Quaternion q(1.0f, 0.0f, 0.0f, 0.0f); // Identity quaternion
+    Matrix4 mat = q.ToMatrix();
+
+    ASSERT_EQUAL(mat.m[0][0], 1.0f);
+    ASSERT_EQUAL(mat.m[1][1], 1.0f);
+    ASSERT_EQUAL(mat.m[2][2], 1.0f);
+    ASSERT_EQUAL(mat.m[3][3], 1.0f);
+}
+
+TEST_CASE(Quaternion_Conjugate)
+{
+    Quaternion q(1.0f, 2.0f, 3.0f, 4.0f);
+    Quaternion result = q.Conjugate();
+
+    ASSERT_EQUAL(result.w, 1.0f);
+    ASSERT_EQUAL(result.x, -2.0f);
+    ASSERT_EQUAL(result.y, -3.0f);
+    ASSERT_EQUAL(result.z, -4.0f);
+}
+
+TEST_CASE(Quaternion_Normalization)
+{
+    Quaternion q(1.0f, 2.0f, 3.0f, 4.0f);
+    Quaternion result = q.Normalized();
+
+    float norm = std::sqrt(1.0f + 4.0f + 9.0f + 16.0f); // sqrt(30)
+    ASSERT_NEAR(result.w, 1.0f / norm, 0.0001f);
+    ASSERT_NEAR(result.x, 2.0f / norm, 0.0001f);
+    ASSERT_NEAR(result.y, 3.0f / norm, 0.0001f);
+    ASSERT_NEAR(result.z, 4.0f / norm, 0.0001f);
+}
+
+TEST_CASE(Quaternion_Slerp)
+{
+    Quaternion q1(1.0f, 0.0f, 0.0f, 0.0f); // Identity
+    Quaternion q2(0.0f, 1.0f, 0.0f, 0.0f); // 180° rotation around X-axis
+    Quaternion result = Quaternion::Slerp(q1, q2, 0.5f);
+
+    ASSERT_NEAR(result.w, 0.70710678f, 0.0001f); // cos(90°/2) = sqrt(2)/2
+    ASSERT_NEAR(result.x, 0.70710678f, 0.0001f); // sin(90°/2) = sqrt(2)/2
+    ASSERT_NEAR(result.y, 0.0f, 0.0001f);
+    ASSERT_NEAR(result.z, 0.0f, 0.0001f);
+}
+
+TEST_CASE(Quaternion_ToMatrix_Rotation)
+{
+    Quaternion q = Quaternion::FromAxisAngle(Vector3(0.0f, 1.0f, 0.0f), 3.14159f); // 180° around Y-axis
+    Matrix4 mat = q.ToMatrix();
+
+    Vector3 original(1.0f, 0.0f, 0.0f);
+    Vector3 rotated = mat * original; // Should rotate to (-1, 0, 0)
+
+    ASSERT_NEAR(rotated.x, -1.0f, 0.0001f);
+    ASSERT_NEAR(rotated.y, 0.0f, 0.0001f);
+    ASSERT_NEAR(rotated.z, 0.0f, 0.0001f);
+}
+
+TEST_CASE(Quaternion_FromAxisAngle)
+{
+    Vector3 axis(0.0f, 1.0f, 0.0f); // Y-axis
+    float angle = 3.14159f; // 180 degrees
+    Quaternion q = Quaternion::FromAxisAngle(axis, angle);
+
+    // Expected: w = cos(90°) = 0, xyz = (0, 1, 0) * sin(90°) = (0, 1, 0)
+    ASSERT_NEAR(q.w, 0.0f, 0.0001f);
+    ASSERT_NEAR(q.x, 0.0f, 0.0001f);
+    ASSERT_NEAR(q.y, 1.0f, 0.0001f);
+    ASSERT_NEAR(q.z, 0.0f, 0.0001f);
 }
 #pragma endregion

@@ -10,6 +10,10 @@ class Vector3
 public:
     float x, y, z;
 
+    Vector3();
+
+    Vector3(float scalar);
+
     Vector3(float x, float y, float z);
 
     // Addition
@@ -23,6 +27,15 @@ public:
 
     // Scalar division
     Vector3 operator/(float scalar) const;
+
+    // Subscript operator for read/write access
+    float& operator[](int index);
+
+    // Const version for read-only access
+    const float& operator[](int index) const;
+
+    // absolute value of each component
+    Vector3 Abs() const;
 
     // Dot product
     float Dot(const Vector3& other) const;
@@ -42,6 +55,9 @@ public:
     // Angle between two vectors (in radians)
     static float Angle(const Vector3& a, const Vector3& b);
 };
+
+// Non-member function for float * Vector3
+Vector3 operator*(float scalar, const Vector3& vec);
 } //End Namespace
 
 #endif

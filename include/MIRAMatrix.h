@@ -19,6 +19,9 @@ public:
     // Transpose the matrix
     Matrix4 Transpose() const;
 
+    // Matrix inversion using Gauss-Jordan elimination
+    Matrix4 Inverse() const;
+
     // Create a translation matrix
     static Matrix4 Translate(const Vector3& translation);
 
@@ -34,6 +37,9 @@ public:
     // Create a scaling matrix
     static Matrix4 Scale(const Vector3& scale);
 };
+
+// Non-member function for Matrix4 * Vector3
+Vector3 operator*(const Matrix4& mat, const Vector3& vec);
 }//End namespace
 
 #endif

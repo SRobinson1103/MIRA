@@ -1,4 +1,5 @@
 #include "MIRAMathTests.h"
+#include "MIRACollisionTests.h"
 
 int main()
 {
@@ -10,17 +11,18 @@ int main()
         try
         {
             test();
-            std::cout << "PASS: " << name << "\n";
+            std::cout << COLOR_BLUE <<  "PASS: " << COLOR_RESET << name << "\n";
             passed++;
         }
         catch (...)
         {
-            std::cerr << "FAIL: " << name << "\n";
+            std::cerr << COLOR_RED <<  "FAIL: " << COLOR_RESET << name << "\n";
             failed++;
         }
     }
 
-    std::cout << "\nResults: " << passed << " passed, " << failed << " failed.\n";
+    std::cout << "\nResults: " << passed << COLOR_GREEN << " PASSED, " << COLOR_RESET << failed << COLOR_YELLOW << " FAILED.\n" << COLOR_RESET;
+
     system("pause");
-    return failed > 0 ? 1 : 0;
+    return failed > 0 ? EXIT_FAILURE : EXIT_SUCCESS;
 }

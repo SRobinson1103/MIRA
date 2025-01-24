@@ -1,8 +1,15 @@
 ﻿#include "MIRAVector.h"
 
+#include <stdexcept>
+
+
 using namespace MIRA;
 
-Vector3::Vector3(float x = 0.0f, float y = 0.0f, float z = 0.0f) : x(x), y(y), z(z) {}
+MIRA::Vector3::Vector3() : x(0.0f), y(0.0f), z(0.0f) {}
+
+MIRA::Vector3::Vector3(float scalar) : x(scalar), y(scalar), z(scalar) {}
+
+Vector3::Vector3(float x, float y, float z) : x(x), y(y), z(z) {}
 
 Vector3 Vector3::operator+(const Vector3& other) const { return Vector3(x + other.x, y + other.y, z + other.z); }
 
@@ -11,6 +18,30 @@ Vector3 Vector3::operator-(const Vector3& other) const { return Vector3(x - othe
 Vector3 Vector3::operator*(float scalar) const { return Vector3(x * scalar, y * scalar, z * scalar); }
 
 Vector3 Vector3::operator/(float scalar) const { return Vector3(x / scalar, y / scalar, z / scalar); }
+
+float& Vector3::operator[](int index)
+{
+    switch (index)
+    {
+    case 0: return x;
+    case 1: return y;
+    case 2: return z;
+    default: throw std::out_of_range("Vector3 index out of range!");
+    }
+}
+
+const float& Vector3::operator[](int index) const
+{
+    switch (index)
+    {
+    case 0: return x;
+    case 1: return y;
+    case 2: return z;
+    default: throw std::out_of_range("Vector3 index out of range!");
+    }
+}
+
+Vector3 Vector3::Abs() const { return Vector3(std::fabs(x), std::fabs(y), std::fabs(z)); }
 
 float Vector3::Dot(const Vector3& other) const { return x * other.x + y * other.y + z * other.z; }
 
@@ -46,3 +77,5 @@ float Vector3::Angle(const Vector3& a, const Vector3& b)
     return std::acos(dot / (magA * magB));
 }
 #pragma endregion
+
+Vector3 MIRA::operator*(float scalar, const Vector3& vec) { return vec * scalar; }
