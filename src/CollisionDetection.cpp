@@ -95,58 +95,60 @@ void ClosestPointsBetweenLineSegments(const Vector3& A1, const Vector3& B1,
     // Clamp the parameters to the segment ranges.
     // Check all endpoint pairs to ensure the minimal distance is found.
 
-    Vector3 d1 = B1 - A1;
-    Vector3 d2 = B2 - A2;
-    Vector3 r = A1 - A2;
+    // Direction vectors and initial parameters
+    const Vector3 d1 = B1 - A1, d2 = B2 - A2;
+    const Vector3 r = A1 - A2;
+    const float a = d1.Dot(d1), b = d1.Dot(d2), c = d2.Dot(d2);
+    const float d = d1.Dot(r), e = d2.Dot(r);
+    float s = 0.f, t = 0.f;
 
-    float a = d1.Dot(d1);
-    float b = d1.Dot(d2);
-    float c = d2.Dot(d2);
-    float d = d1.Dot(r);
-    float e = d2.Dot(r);
-    float denom = a * c - b * b;
-
-    float s = 0.0f, t = 0.0f;
-
-    if (denom != 0.0f)
+    // Handle non-parallel segments
+    const float denom = a * c - b * b;
+    if (fabsf(denom) > 1e-6f)
     {
         s = (b * e - c * d) / denom;
         t = (a * e - b * d) / denom;
     }
+    // Handle parallel segments
     else
     {
-        // Handle parallel segments by projecting endpoints
-        s = 0.0f;
         t = (b > c ? d / b : e / c);
-        t = std::clamp(t, 0.0f, 1.0f);
-
-        // Project closest point from segment2 to segment1
-        Vector3 closestOn2 = A2 + d2 * t;
-        s = std::clamp((d1.Dot(closestOn2 - A1)) / a, 0.0f, 1.0f);
+        t = fminf(fmaxf(t, 0.f), 1.f);
+        const Vector3 closestOn2 = A2 + d2 * t;
+        s = (d1.Dot(closestOn2 - A1)) / a;
+        s = fminf(fmaxf(s, 0.f), 1.f);
     }
 
     // Compute initial closest points
-    closest1 = A1 + d1 * std::clamp(s, 0.0f, 1.0f);
-    closest2 = A2 + d2 * std::clamp(t, 0.0f, 1.0f);
+    closest1 = A1 + d1 * fminf(fmaxf(s, 0.f), 1.f);
+    closest2 = A2 + d2 * fminf(fmaxf(t, 0.f), 1.f);
 
-    // Check all endpoint combinations
-    float bestDistSq = (closest2 - closest1).Dot(closest2 - closest1);
+    // Fast endpoint check optimization
+    const Vector3 delta = closest2 - closest1;
+    const float distSq = delta.Dot(delta);
+    float bestDistSq = distSq;
+
+    // Only check endpoints if initial points are clamped
     auto checkPair = [&](const Vector3& p1, const Vector3& p2)
     {
-        Vector3 delta = p2 - p1;
-        float distSq = delta.Dot(delta);
-        if (distSq < bestDistSq)
+        const Vector3 d = p2 - p1;
+        const float newDistSq = d.Dot(d);
+        if (newDistSq < bestDistSq)
         {
-            bestDistSq = distSq;
+            bestDistSq = newDistSq;
             closest1 = p1;
             closest2 = p2;
         }
     };
 
-    checkPair(A1, A2);
-    checkPair(A1, B2);
-    checkPair(B1, A2);
-    checkPair(B1, B2);
+    if (s <= 0.f || s >= 1.f)
+    {
+        checkPair((s <= 0.f) ? A1 : B1, closest2);
+    }
+    if (t <= 0.f || t >= 1.f)
+    {
+        checkPair(closest1, (t <= 0.f) ? A2 : B2);
+    }
 }
 
 bool CheckCollision(const Collider& a, const Collider& b, CollisionInfo& info)
