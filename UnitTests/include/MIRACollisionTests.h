@@ -1,10 +1,314 @@
 #include "MIRATestFramework.h"
 
-#include "MIRACollider.h"
-#include "MIRARigidBody.h"
 #include "CollisionDetection.h"
+#include "CollisionDetection2D.h"
 
 using namespace MIRA;
+
+#pragma region AABB2D
+TEST_CASE(ComputeAABB2D_Circle)
+{
+    RigidBody2D body;
+    Collider2D circle(&body, Collider2D::Type2D::CIRCLE);
+    circle.SetCircleRadius(2.0f);
+
+    AABB2D aabb = ComputeAABB2D(circle);
+    ASSERT_EQUAL(aabb.min_x, -2.0f);
+    ASSERT_EQUAL(aabb.min_y, -2.0f);
+    ASSERT_EQUAL(aabb.max_x, 2.0f);
+    ASSERT_EQUAL(aabb.max_y, 2.0f);
+}
+
+TEST_CASE(ComputeAABB2D_Rectangle)
+{
+    RigidBody2D body;
+    Collider2D rect(&body, Collider2D::Type2D::RECTANGLE);
+    rect.SetRectLength(4.0f);
+    rect.SetRectHeight(6.0f);
+
+    AABB2D aabb = ComputeAABB2D(rect);
+    ASSERT_EQUAL(aabb.min_x, -2.0f);
+    ASSERT_EQUAL(aabb.min_y, -3.0f);
+    ASSERT_EQUAL(aabb.max_x, 2.0f);
+    ASSERT_EQUAL(aabb.max_y, 3.0f);
+}
+
+TEST_CASE(CheckAABBOverlap2D_Overlapping)
+{
+    AABB2D a = { -1.0f, 1.0f, -1.0f, 1.0f };
+    AABB2D b = { -0.5f, 0.5f, -0.5f, 0.5f };
+    ASSERT_EQUAL(CheckAABBOverlap2D(a, b), true);
+}
+
+TEST_CASE(CheckAABBOverlap2D_NonOverlapping)
+{
+    AABB2D a = { -1.0f, 1.0f, -1.0f, 1.0f };
+    AABB2D b = { 2.0f, 2.0f, 3.0f, 3.0f };
+    ASSERT_EQUAL(CheckAABBOverlap2D(a, b), false);
+}
+#pragma endregion
+
+#pragma region circlecircle
+TEST_CASE(CircleCircleCollision_Overlapping)
+{
+    RigidBody2D body1, body2;
+    body1.position = Vector2(0.0f, 0.0f);
+    body2.position = Vector2(1.5f, 0.0f);
+
+    Collider2D circle1(&body1, Collider2D::Type2D::CIRCLE);
+    Collider2D circle2(&body2, Collider2D::Type2D::CIRCLE);
+    circle1.SetCircleRadius(1.0f);
+    circle2.SetCircleRadius(1.0f);
+
+    CollisionInfo2D info;
+    bool result = CircleCircleCollision(circle1, circle2, info);
+
+    ASSERT_EQUAL(result, true);
+    ASSERT_NEAR(info.depth, 0.5f, 1e-6f);
+    ASSERT_EQUAL(info.normal, Vector2(1.0f, 0.0f));
+}
+
+TEST_CASE(CircleCircleCollision_NonOverlapping)
+{
+    RigidBody2D body1, body2;
+    body1.position = Vector2(0.0f, 0.0f);
+    body2.position = Vector2(3.0f, 0.0f);
+
+    Collider2D circle1(&body1, Collider2D::Type2D::CIRCLE);
+    Collider2D circle2(&body2, Collider2D::Type2D::CIRCLE);
+    circle1.SetCircleRadius(1.0f);
+    circle2.SetCircleRadius(1.0f);
+
+    CollisionInfo2D info;
+    bool result = CircleCircleCollision(circle1, circle2, info);
+
+    ASSERT_EQUAL(result, false);
+}
+
+TEST_CASE(CircleCircleCollision_ZeroDistance)
+{
+    RigidBody2D body1, body2;
+    body1.position = Vector2(0.0f, 0.0f);
+    body2.position = Vector2(0.0f, 0.0f);
+
+    Collider2D circle1(&body1, Collider2D::Type2D::CIRCLE);
+    Collider2D circle2(&body2, Collider2D::Type2D::CIRCLE);
+    circle1.SetCircleRadius(1.0f);
+    circle2.SetCircleRadius(1.0f);
+
+    CollisionInfo2D info;
+    bool result = CircleCircleCollision(circle1, circle2, info);
+
+    ASSERT_EQUAL(result, true);
+    ASSERT_NEAR(info.depth, 2.0f, 1e-6f);  // Sum of radii
+    ASSERT_EQUAL(info.normal, Vector2(1.0f, 0.0f));  // Default direction
+}
+#pragma endregion
+
+#pragma region circlerect
+TEST_CASE(CircleRectCollision_Overlapping)
+{
+    RigidBody2D body1, body2;
+    body1.position = Vector2(0.0f, 0.0f);
+    body2.position = Vector2(1.5f, 0.0f);
+
+    Collider2D circle(&body1, Collider2D::Type2D::CIRCLE);
+    Collider2D rect(&body2, Collider2D::Type2D::RECTANGLE);
+    circle.SetCircleRadius(1.0f);
+    rect.SetRectLength(2.0f);
+    rect.SetRectHeight(2.0f);
+
+    CollisionInfo2D info;
+    bool result = CircleRectCollision(circle, rect, info);
+
+    ASSERT_EQUAL(result, true);
+    ASSERT_NEAR(info.depth, 0.5f, 1e-6f);
+    ASSERT_EQUAL(info.normal, Vector2(1.0f, 0.0f));
+}
+
+TEST_CASE(CircleRectCollision_NonOverlapping)
+{
+    RigidBody2D body1, body2;
+    body1.position = Vector2(0.0f, 0.0f);
+    body2.position = Vector2(3.0f, 0.0f);
+
+    Collider2D circle(&body1, Collider2D::Type2D::CIRCLE);
+    Collider2D rect(&body2, Collider2D::Type2D::RECTANGLE);
+    circle.SetCircleRadius(1.0f);
+    rect.SetRectLength(2.0f);
+    rect.SetRectHeight(2.0f);
+
+    CollisionInfo2D info;
+    bool result = CircleRectCollision(circle, rect, info);
+
+    ASSERT_EQUAL(result, false);
+}
+
+TEST_CASE(CircleRectCollision_TouchingEdge)
+{
+    RigidBody2D body1, body2;
+    body1.position = Vector2(0.0f, 0.0f);  // Circle
+    body2.position = Vector2(2.0f, 0.0f);  // Rectangle
+
+    Collider2D circle(&body1, Collider2D::Type2D::CIRCLE);
+    Collider2D rect(&body2, Collider2D::Type2D::RECTANGLE);
+    circle.SetCircleRadius(1.0f);
+    rect.SetRectLength(2.0f);
+    rect.SetRectHeight(2.0f);
+
+    CollisionInfo2D info;
+    bool result = CircleRectCollision(circle, rect, info);
+
+    ASSERT_EQUAL(result, true);
+    ASSERT_NEAR(info.depth, 0.0f, 1e-6f);  // Just touching
+    ASSERT_EQUAL(info.normal, Vector2(1.0f, 0.0f));
+}
+
+TEST_CASE(CircleRectCollision_CircleInsideRect)
+{
+    RigidBody2D body1, body2;
+    body1.position = Vector2(0.0f, 0.0f);  // Circle
+    body2.position = Vector2(0.0f, 0.0f);  // Rectangle
+
+    Collider2D circle(&body1, Collider2D::Type2D::CIRCLE);
+    Collider2D rect(&body2, Collider2D::Type2D::RECTANGLE);
+    circle.SetCircleRadius(1.0f);
+    rect.SetRectLength(4.0f);
+    rect.SetRectHeight(4.0f);
+
+    CollisionInfo2D info;
+    bool result = CircleRectCollision(circle, rect, info);
+
+    ASSERT_EQUAL(result, true);
+    ASSERT_NEAR(info.depth, 1.0f, 1e-6f);  // Full radius penetration
+    // Normal could point in any direction, but should be consistent
+}
+
+TEST_CASE(CircleRectCollision_CornerCase)
+{
+    RigidBody2D body1, body2;
+    body1.position = Vector2(3.0f, 3.0f);  // Circle
+    body2.position = Vector2(2.0f, 2.0f);  // Rectangle (size 2x2)
+
+    Collider2D circle(&body1, Collider2D::Type2D::CIRCLE);
+    Collider2D rect(&body2, Collider2D::Type2D::RECTANGLE);
+    circle.SetCircleRadius(1.0f);
+    rect.SetRectLength(2.0f);
+    rect.SetRectHeight(2.0f);
+
+    CollisionInfo2D info;
+    bool result = CircleRectCollision(circle, rect, info);
+
+    ASSERT_EQUAL(result, true);
+    // Normal should point diagonally
+    Vector2 expectedNormal = (Vector2(3.0f, 3.0f) - Vector2(2.0f, 2.0f)).Normalized();
+    ASSERT_NEAR(info.normal.x, expectedNormal.x, 1e-6f);
+    ASSERT_NEAR(info.normal.y, expectedNormal.y, 1e-6f);
+}
+#pragma endregion
+
+#pragma region rectrect
+TEST_CASE(RectRectCollision_Overlapping)
+{
+    RigidBody2D body1, body2;
+    body1.position = Vector2(0.0f, 0.0f);
+    body2.position = Vector2(1.5f, 0.0f);
+
+    Collider2D rect1(&body1, Collider2D::Type2D::RECTANGLE);
+    Collider2D rect2(&body2, Collider2D::Type2D::RECTANGLE);
+    rect1.SetRectLength(2.0f);
+    rect1.SetRectHeight(2.0f);
+    rect2.SetRectLength(2.0f);
+    rect2.SetRectHeight(2.0f);
+
+    CollisionInfo2D info;
+    bool result = RectRectCollision(rect1, rect2, info);
+
+    ASSERT_EQUAL(result, true);
+    ASSERT_NEAR(info.depth, 0.5f, 1e-6f);
+    ASSERT_EQUAL(info.normal, Vector2(1.0f, 0.0f));
+}
+
+TEST_CASE(RectRectCollision_NonOverlapping)
+{
+    RigidBody2D body1, body2;
+    body1.position = Vector2(0.0f, 0.0f);
+    body2.position = Vector2(3.0f, 0.0f);
+
+    Collider2D rect1(&body1, Collider2D::Type2D::RECTANGLE);
+    Collider2D rect2(&body2, Collider2D::Type2D::RECTANGLE);
+    rect1.SetRectLength(2.0f);
+    rect1.SetRectHeight(2.0f);
+    rect2.SetRectLength(2.0f);
+    rect2.SetRectHeight(2.0f);
+
+    CollisionInfo2D info;
+    bool result = RectRectCollision(rect1, rect2, info);
+
+    ASSERT_EQUAL(result, false);
+}
+
+TEST_CASE(RectRectCollision_TouchingEdge)
+{
+    RigidBody2D body1, body2;
+    body1.position = Vector2(0.0f, 0.0f);
+    body2.position = Vector2(2.0f, 0.0f);  // Exactly touching
+
+    Collider2D rect1(&body1, Collider2D::Type2D::RECTANGLE);
+    Collider2D rect2(&body2, Collider2D::Type2D::RECTANGLE);
+    rect1.SetRectLength(2.0f);
+    rect1.SetRectHeight(2.0f);
+    rect2.SetRectLength(2.0f);
+    rect2.SetRectHeight(2.0f);
+
+    CollisionInfo2D info;
+    bool result = RectRectCollision(rect1, rect2, info);
+
+    ASSERT_EQUAL(result, false);  // No penetration
+}
+
+// Test rectangle completely inside another rectangle
+TEST_CASE(RectRectCollision_CompleteContainment)
+{
+    RigidBody2D body1, body2;
+    body1.position = Vector2(0.0f, 0.0f);  // Larger rect
+    body2.position = Vector2(0.0f, 0.0f);  // Smaller rect
+
+    Collider2D rect1(&body1, Collider2D::Type2D::RECTANGLE);
+    Collider2D rect2(&body2, Collider2D::Type2D::RECTANGLE);
+    rect1.SetRectLength(4.0f);
+    rect1.SetRectHeight(4.0f);
+    rect2.SetRectLength(2.0f);
+    rect2.SetRectHeight(2.0f);
+
+    CollisionInfo2D info;
+    bool result = RectRectCollision(rect1, rect2, info);
+
+    ASSERT_EQUAL(result, true);
+    ASSERT_NEAR(info.depth, 2.0f, 1e-6f);  // Half of smaller rect's size
+    ASSERT_EQUAL(info.normal, Vector2(1.0f, 0.0f));  // Could be any axis
+}
+
+TEST_CASE(RectRectCollision_PartialOverlap)
+{
+    RigidBody2D body1, body2;
+    body1.position = Vector2(0.0f, 0.0f);
+    body2.position = Vector2(1.5f, 3.0f);  // Overlap on X but not Y
+
+    Collider2D rect1(&body1, Collider2D::Type2D::RECTANGLE);
+    Collider2D rect2(&body2, Collider2D::Type2D::RECTANGLE);
+    rect1.SetRectLength(2.0f);
+    rect1.SetRectHeight(2.0f);
+    rect2.SetRectLength(2.0f);
+    rect2.SetRectHeight(2.0f);
+
+    CollisionInfo2D info;
+    bool result = RectRectCollision(rect1, rect2, info);
+
+    ASSERT_EQUAL(result, false);  // No Y-axis overlap
+}
+
+#pragma endregion
 
 #pragma region rigidbody
 TEST_CASE(RigidBody_ApplyForce)

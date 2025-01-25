@@ -22,7 +22,8 @@ private:
     {
         struct { float radius; } sphere;
         struct { Vector3 halfExtents; } box;
-        struct { float radius; float height; } capsule;
+        struct { float radius;
+                 float height; /*height of the spine*/ } capsule;
     };
 
 public:
@@ -86,33 +87,6 @@ public:
     void SetCapsuleHeight(float height) { capsule.height = height; }
 #endif
 };
-/*
-class Collider
-{
-public:
-    enum class Type { SPHERE, BOX };
-    Type type;
-    RigidBody* body;
-
-    Collider(Type type, RigidBody* body);
-    virtual ~Collider() = default;
-};
-
-class SphereCollider : public Collider
-{
-public:
-    float radius;
-
-    SphereCollider(RigidBody* body, float radius);
-};
-
-class BoxCollider : public Collider
-{
-public:
-    Vector3 halfExtents;
-
-    BoxCollider(RigidBody* body, const Vector3& halfExtents);
-};*/
-}
+}// End namespace
 
 #endif

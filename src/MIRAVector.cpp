@@ -2,9 +2,47 @@
 
 #include <stdexcept>
 
-
 using namespace MIRA;
 
+#pragma region vector2
+Vector2::Vector2() : x(0.0f), y(0.0f) {}
+
+Vector2::Vector2(float x, float y) : x(x), y(y) {}
+
+// Basic arithmetic operations
+Vector2 Vector2::operator+(const Vector2& other) const { return Vector2(x + other.x, y + other.y); }
+
+Vector2 Vector2::operator-(const Vector2& other) const { return Vector2(x - other.x, y - other.y); }
+
+Vector2 Vector2::operator*(float scalar) const { return Vector2(x * scalar, y * scalar); }
+
+Vector2 Vector2::operator/(float scalar) const { return Vector2(x / scalar, y / scalar); }
+
+float Vector2::Dot(const Vector2& other) const { return x * other.x + y * other.y; }
+
+float Vector2::Magnitude() const { return std::sqrt(x * x + y * y); }
+
+Vector2 Vector2::Normalized() const
+{
+    float mag = Magnitude();
+    if (mag > 0.0f)
+    {
+        return Vector2(x / mag, y / mag);
+    }
+    return Vector2(); // Avoid division by zero
+}
+
+
+Vector2 Vector2::Abs() const { return Vector2(std::fabs(x), std::fabs(y)); }
+
+bool Vector2::operator==(const Vector2& other) const { return x == other.x && y == other.y; }
+
+bool Vector2::operator!=(const Vector2& other) const { return !(*this == other); }
+
+Vector2 MIRA::operator*(float scalar, const Vector2& vec) { return vec * scalar; }
+#pragma endregion
+
+#pragma region vector3
 MIRA::Vector3::Vector3() : x(0.0f), y(0.0f), z(0.0f) {}
 
 MIRA::Vector3::Vector3(float scalar) : x(scalar), y(scalar), z(scalar) {}
@@ -89,3 +127,4 @@ float Vector3::Angle(const Vector3& a, const Vector3& b)
 #pragma endregion
 
 Vector3 MIRA::operator*(float scalar, const Vector3& vec) { return vec * scalar; }
+#pragma endregion

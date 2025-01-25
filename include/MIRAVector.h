@@ -5,6 +5,43 @@
 
 namespace MIRA
 {
+class Vector2 {
+public:
+    float x, y;
+
+    Vector2();
+    Vector2(float x, float y);
+
+    // Basic arithmetic operations
+    Vector2 operator+(const Vector2& other) const;
+
+    Vector2 operator-(const Vector2& other) const;
+
+    Vector2 operator*(float scalar) const;
+
+    Vector2 operator/(float scalar) const;
+
+    // Dot product
+    float Dot(const Vector2& other) const;
+
+    // Magnitude of the vector
+    float Magnitude() const;
+
+    // Normalize the vector (make it unit length)
+    Vector2 Normalized() const;
+
+    // Absolute value of the vector
+    Vector2 Abs() const;
+
+    // Comparison operators
+    bool operator==(const Vector2& other) const;
+
+    bool operator!=(const Vector2& other) const;
+};
+
+// Non-member function for float * Vector3
+Vector2 operator*(float scalar, const Vector2& vec);
+
 class Vector3
 {
 public:

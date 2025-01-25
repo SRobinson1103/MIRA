@@ -1,5 +1,5 @@
-#ifndef MIRA_AABB_H
-#define MIRA_AABB_H
+#ifndef MIRA_COLLISIONDETECTION_H
+#define MIRA_COLLISIONDETECTION_H
 
 #include "MIRAVector.h"
 #include "MIRACollider.h"
@@ -9,6 +9,12 @@ struct AABB
 {
     MIRA::Vector3 min; // bottom-left-back
     MIRA::Vector3 max; // top-right-front
+};
+
+struct CollisionInfo
+{
+    MIRA::Vector3 normal; // Collision normal, direction to resolve
+    float depth;          // Penetration depth
 };
 
 AABB ComputeAABB(const MIRA::Collider& collider);
@@ -21,15 +27,10 @@ MIRA::Vector3 ClosestPointOnLineSegment(const MIRA::Vector3& A, const MIRA::Vect
 // Check if a line segment [start, end] overlaps with an AABB
 bool CheckLineSegmentAABBOverlap(const MIRA::Vector3& start, const MIRA::Vector3& end, const AABB& aabb);
 
+// Find the clostest point between two line segments
 void ClosestPointsBetweenLineSegments(const MIRA::Vector3& A1, const MIRA::Vector3& B1,
     const MIRA::Vector3& A2, const MIRA::Vector3& B2,
     MIRA::Vector3& closest1, MIRA::Vector3& closest2);
-
-struct CollisionInfo
-{
-    MIRA::Vector3 normal; // Collision normal, direction to resolve
-    float depth;          // Penetration depth
-};
 
 // Check for a collision between two colliders
 bool CheckCollision(const MIRA::Collider& a, const MIRA::Collider& b, CollisionInfo& info);
@@ -43,6 +44,7 @@ bool SphereBoxCollision(const MIRA::Collider& sphere, const MIRA::Collider& box,
 // Separating Axis Theorem (SAT)
 bool BoxBoxCollision(const MIRA::Collider& a, const MIRA::Collider& b, CollisionInfo& info);
 
+// Closest point on box to point in space
 MIRA::Vector3 GetClosestBoxPoint(const MIRA::Collider& box, const MIRA::Vector3& point);
 
 // Closest point on capsule line segment to sphere center

@@ -15,12 +15,18 @@ set(SOURCE_FILES
         ${PROJECT_SOURCE_DIR}/include/MIRACollider.h
         ${PROJECT_SOURCE_DIR}/include/MIRARigidBody.h
         ${PROJECT_SOURCE_DIR}/include/CollisionDetection.h
+        ${PROJECT_SOURCE_DIR}/include/MIRARigidBody2D.h
+        ${PROJECT_SOURCE_DIR}/include/MIRACollider2D.h
+        ${PROJECT_SOURCE_DIR}/include/CollisionDetection2D.h
         ${PROJECT_SOURCE_DIR}/src/MIRAVector.cpp
         ${PROJECT_SOURCE_DIR}/src/MIRAMatrix.cpp
         ${PROJECT_SOURCE_DIR}/src/MIRAQuaternion.cpp
         ${PROJECT_SOURCE_DIR}/src/MIRACollider.cpp
         ${PROJECT_SOURCE_DIR}/src/MIRARigidBody.cpp
         ${PROJECT_SOURCE_DIR}/src/CollisionDetection.cpp
+        ${PROJECT_SOURCE_DIR}/src/MIRARigidBody2D.cpp
+        ${PROJECT_SOURCE_DIR}/src/MIRACollider2D.cpp
+        ${PROJECT_SOURCE_DIR}/src/CollisionDetection2D.cpp
     )
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
@@ -39,18 +45,24 @@ set(SOURCE_FILES_TEST
     ${CMAKE_SOURCE_DIR}/include/MIRACollider.h
     ${CMAKE_SOURCE_DIR}/include/MIRARigidBody.h
     ${CMAKE_SOURCE_DIR}/include/CollisionDetection.h
+    ${CMAKE_SOURCE_DIR}/include/MIRARigidBody2D.h
+    ${CMAKE_SOURCE_DIR}/include/MIRACollider2D.h
+    ${CMAKE_SOURCE_DIR}/include/CollisionDetection2D.h
     ${CMAKE_SOURCE_DIR}/src/MIRAVector.cpp
     ${CMAKE_SOURCE_DIR}/src/MIRAMatrix.cpp
     ${CMAKE_SOURCE_DIR}/src/MIRAQuaternion.cpp
     ${CMAKE_SOURCE_DIR}/src/MIRACollider.cpp
     ${CMAKE_SOURCE_DIR}/src/MIRARigidBody.cpp
     ${CMAKE_SOURCE_DIR}/src/CollisionDetection.cpp
+    ${CMAKE_SOURCE_DIR}/src/MIRARigidBody2D.cpp
+    ${CMAKE_SOURCE_DIR}/src/MIRACollider2D.cpp
+    ${CMAKE_SOURCE_DIR}/src/CollisionDetection2D.cpp
 )
 
 include_directories(${CMAKE_SOURCE_DIR}/UnitTests/include)
 
 # Create a test executable
-add_executable(MIRA_tests ${CMAKE_SOURCE_DIR}/UnitTests/UnitTestMain.cpp ${SOURCE_FILES_TEST})
+add_executable(MIRA_tests ${CMAKE_SOURCE_DIR}/UnitTests/UnitTestMain.cpp ${SOURCE_FILES_TEST} "include/MIRACollider2D.h")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET MIRA PROPERTY CXX_STANDARD 20)

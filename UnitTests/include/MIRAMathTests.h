@@ -6,7 +6,110 @@
 
 using namespace MIRA;
 
-#pragma region vector
+#pragma region vector2
+TEST_CASE(Vector2_DefaultConstructor)
+{
+    Vector2 v;
+    ASSERT_EQUAL(v.x, 0.0f);
+    ASSERT_EQUAL(v.y, 0.0f);
+}
+
+TEST_CASE(Vector2_ParameterizedConstructor)
+{
+    Vector2 v(3.0f, 4.0f);
+    ASSERT_EQUAL(v.x, 3.0f);
+    ASSERT_EQUAL(v.y, 4.0f);
+}
+
+TEST_CASE(Vector2_Addition)
+{
+    Vector2 v1(3.0f, 4.0f);
+    Vector2 v2(1.0f, 2.0f);
+    Vector2 result = v1 + v2;
+    ASSERT_EQUAL(result.x, 4.0f);
+    ASSERT_EQUAL(result.y, 6.0f);
+}
+
+TEST_CASE(Vector2_Subtraction)
+    {
+    Vector2 v1(3.0f, 4.0f);
+    Vector2 v2(1.0f, 2.0f);
+    Vector2 result = v1 - v2;
+    ASSERT_EQUAL(result.x, 2.0f);
+    ASSERT_EQUAL(result.y, 2.0f);
+}
+
+TEST_CASE(Vector2_ScalarMult)
+{
+    Vector2 v(3.0f, 4.0f);
+    Vector2 result = v * 2.0f;
+    ASSERT_EQUAL(result.x, 6.0f);
+    ASSERT_EQUAL(result.y, 8.0f);
+}
+
+TEST_CASE(Vector2_ScalarDiv)
+{
+    Vector2 v(3.0f, 4.0f);
+    Vector2 result = v / 2.0f;
+    ASSERT_EQUAL(result.x, 1.5f);
+    ASSERT_EQUAL(result.y, 2.0f);
+}
+
+TEST_CASE(Vector2_DotProduct)
+{
+    Vector2 v1(3.0f, 4.0f);
+    Vector2 v2(1.0f, 2.0f);
+    float dot = v1.Dot(v2);
+    ASSERT_EQUAL(dot, 11.0f); // 3*1 + 4*2 = 11
+}
+
+TEST_CASE(Vector2_Magnitude)
+{
+    Vector2 v(3.0f, 4.0f);
+    float mag = v.Magnitude();
+    ASSERT_NEAR(mag, 5.0f, 1e-6f); // sqrt(3^2 + 4^2) = 5
+}
+
+TEST_CASE(Vector2_Normalization)
+{
+    Vector2 v(3.0f, 4.0f);
+    Vector2 normalized = v.Normalized();
+    ASSERT_NEAR(normalized.x, 0.6f, 1e-6f); // 3/5 = 0.6
+    ASSERT_NEAR(normalized.y, 0.8f, 1e-6f); // 4/5 = 0.8
+}
+
+TEST_CASE(Vector2_NormalizeZeroVector)
+{
+    Vector2 zeroVec(0.0f, 0.0f);
+    Vector2 zeroNormalized = zeroVec.Normalized();
+    ASSERT_EQUAL(zeroNormalized.x, 0.0f);
+    ASSERT_EQUAL(zeroNormalized.y, 0.0f);
+}
+
+TEST_CASE(Vector2_AbsoluteValue)
+{
+    Vector2 v(-3.0f, -4.0f);
+    Vector2 absV = v.Abs();
+    ASSERT_EQUAL(absV.x, 3.0f);
+    ASSERT_EQUAL(absV.y, 4.0f);
+}
+
+TEST_CASE(Vector2_Equality)
+{
+    Vector2 v1(3.0f, 4.0f);
+    Vector2 v2(3.0f, 4.0f);
+    ASSERT_EQUAL(v1 == v2, true);
+}
+
+TEST_CASE(Vector2_Inequality)
+{
+    Vector2 v1(3.0f, 4.0f);
+    Vector2 v2(3.0f, 5.0f);
+    ASSERT_EQUAL(v1 != v2, true);
+}
+#pragma endregion
+
+#pragma region vector3
 TEST_CASE(Vector3_ScalarMult)
 {
     float scalar = 2.0f;

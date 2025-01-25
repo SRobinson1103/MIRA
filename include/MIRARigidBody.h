@@ -1,5 +1,5 @@
-#ifndef MIRA_RIGID_BODY_H
-#define MIRA_RIGID_BODY_H
+#ifndef MIRA_RIGIDBODY_H
+#define MIRA_RIGIDBODY_H
 
 #include "MIRAVector.h"
 
