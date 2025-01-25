@@ -40,7 +40,7 @@ Vector3 ClosestPointOnLineSegment(const Vector3& A, const Vector3& B, const Vect
 {
     Vector3 AB = B - A;
     float t = (P - A).Dot(AB) / AB.Dot(AB);
-    t = std::max(0.0f, std::min(1.0f, t));
+    t = fminf(fmaxf(t, 0.0f), 1.0f);
     return A + AB * t;
 }
 
@@ -50,6 +50,13 @@ bool CheckLineSegmentAABBOverlap(const Vector3& start, const Vector3& end, const
     // Compute intersection intervals with each AABB slab (X, Y, Z).
     // Track the overlap of all intervals.
     // Return true if all intervals overlap (segment intersects AABB).
+
+    if (start.x > aabb.max.x && end.x > aabb.max.x) return false;
+    if (start.x < aabb.min.x && end.x < aabb.min.x) return false;
+    if (start.y > aabb.max.y && end.y > aabb.max.y) return false;
+    if (start.y < aabb.min.y && end.y < aabb.min.y) return false;
+    if (start.z > aabb.max.z && end.z > aabb.max.z) return false;
+    if (start.z < aabb.min.z && end.z < aabb.min.z) return false;
 
     Vector3 dir = end - start;
     float t_min = 0.0f;
