@@ -21,6 +21,8 @@ public:
     void ClearForces();
 
     void Update(float deltaTime);
+
+    float InvMass();
 };
 }
 #endif

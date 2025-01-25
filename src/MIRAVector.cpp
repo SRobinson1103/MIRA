@@ -41,6 +41,8 @@ const float& Vector3::operator[](int index) const
     }
 }
 
+Vector3 Vector3::operator-() const { return Vector3(-x, -y, -z); }
+
 Vector3 Vector3::Abs() const { return Vector3(std::fabs(x), std::fabs(y), std::fabs(z)); }
 
 float Vector3::Dot(const Vector3& other) const { return x * other.x + y * other.y + z * other.z; }
@@ -65,6 +67,14 @@ Vector3 Vector3::Normalized() const
     }
     return Vector3(); // Return zero vector if magnitude is zero
 }
+
+Vector3 Vector3::Unit() const
+{
+    float len = Magnitude();
+    return (len > 0) ? *this * (1.0f / len) : Vector3(1, 0, 0);
+}
+
+int Vector3::MinAxis() const { return (x < y) ? ((x < z) ? 0 : 2) : ((y < z) ? 1 : 2); }
 
 #pragma region statics
 float Vector3::Distance(const Vector3& a, const Vector3& b) { return (a - b).Magnitude(); }

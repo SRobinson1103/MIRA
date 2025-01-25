@@ -38,7 +38,6 @@ TEST_CASE(RigidBody_ZeroMass_NoMovement)
     body.ApplyForce(Vector3(100.0f, 0.0f, 0.0f));
     body.velocity = Vector3(1.0f, 0.0f, 0.0f);
         
-    // Simulate 1 second
     body.Update(1.0f);
 
     ASSERT_EQUAL(body.velocity.x, 1.0f); // Velocity unchanged (infinite mass)
@@ -51,14 +50,13 @@ TEST_CASE(RigidBody_NegativeVelocity)
     body.velocity = Vector3(-5.0f, 0.0f, 0.0f);
     body.position = Vector3(10.0f, 0.0f, 0.0f);
 
-    // Simulate 1 second
     body.position = body.position + body.velocity * 1.0f;
 
     ASSERT_EQUAL(body.position.x, 5.0f); // 10 - 5 = 5
 }
 #pragma endregion
 
-#pragma region collision
+#pragma region AABB
 TEST_CASE(SphereCollider_AABB)
 {
     RigidBody body;
@@ -114,6 +112,52 @@ TEST_CASE(SphereCollider_NegativeRadius)
     ASSERT_TRUE(aabb.min.x > aabb.max.x);
 }
 
+TEST_CASE(ComputeAABB_Capsule)
+{
+    RigidBody body;
+    body.position = Vector3(0.0f, 0.0f, 0.0f);
+
+    Collider capsuleCollider(Collider::CAPSULE, &body);
+    capsuleCollider.SetCapsuleRadius(1.0f);
+    capsuleCollider.SetCapsuleHeight(2.0f);
+
+    AABB aabb = ComputeAABB(capsuleCollider);
+
+    // Expected AABB for a vertically aligned capsule:
+    // min = (-radius, -halfHeight - radius, -radius)
+    // max = (radius, halfHeight + radius, radius)
+    ASSERT_EQUAL(aabb.min.x, -1.0f);
+    ASSERT_EQUAL(aabb.min.y, -2.0f);
+    ASSERT_EQUAL(aabb.min.z, -1.0f);
+    ASSERT_EQUAL(aabb.max.x, 1.0f);
+    ASSERT_EQUAL(aabb.max.y, 2.0f);
+    ASSERT_EQUAL(aabb.max.z, 1.0f);
+}
+
+TEST_CASE(ComputeAABB_Capsule_Offset)
+{
+    RigidBody body;
+    body.position = Vector3(1.0f, 2.0f, 3.0f);
+
+    Collider capsuleCollider(Collider::CAPSULE, &body);
+    capsuleCollider.SetCapsuleRadius(1.0f);
+    capsuleCollider.SetCapsuleHeight(2.0f);
+
+    AABB aabb = ComputeAABB(capsuleCollider);
+
+    // Expected AABB for a vertically aligned capsule at (1, 2, 3):
+    // min = (1 - radius, 2 - halfHeight - radius, 3 - radius)
+    // max = (1 + radius, 2 + halfHeight + radius, 3 + radius)
+    ASSERT_EQUAL(aabb.min.x, 0.0f);
+    ASSERT_EQUAL(aabb.min.y, 0.0f);
+    ASSERT_EQUAL(aabb.min.z, 2.0f);
+    ASSERT_EQUAL(aabb.max.x, 2.0f);
+    ASSERT_EQUAL(aabb.max.y, 4.0f);
+    ASSERT_EQUAL(aabb.max.z, 4.0f);
+}
+#pragma endregion
+
+#pragma region spheresphere
 TEST_CASE(SphereSphere_Collision)
 {
     RigidBody body1, body2;
@@ -185,7 +229,9 @@ TEST_CASE(SphereSphere_NoCollision_MovingApart)
 
     ASSERT_FALSE(isColliding); // Objects moving away should not collide
 }
+#pragma endregion
 
+#pragma region spherebox
 TEST_CASE(SphereBox_Collision_Outside)
 {
     RigidBody sphereBody, boxBody;
@@ -258,7 +304,9 @@ TEST_CASE(SphereBox_NoCollision)
 
     ASSERT_FALSE(isColliding);
 }
+#pragma endregion
 
+#pragma region boxbox
 TEST_CASE(BoxBox_Collision)
 {
     RigidBody body1, body2;
@@ -278,6 +326,23 @@ TEST_CASE(BoxBox_Collision)
     ASSERT_EQUAL(info.normal.x, 1.0f); // Normal points from box 1 to box 2
 }
 
+TEST_CASE(BoxBoxCollision_NoCollision)
+{
+    RigidBody body1, body2;
+    body1.position = Vector3(0.0f, 0.0f, 0.0f);
+    body2.position = Vector3(3.0f, 0.0f, 0.0f);
+
+    Collider boxCollider1(Collider::BOX, &body1);
+    boxCollider1.SetBoxHalfExtents(Vector3(1.0f, 1.0f, 1.0f));
+    Collider boxCollider2(Collider::BOX, &body2);
+    boxCollider2.SetBoxHalfExtents(Vector3(1.0f, 1.0f, 1.0f));
+
+    CollisionInfo info;
+    bool isColliding = BoxBoxCollision(boxCollider1, boxCollider2, info);
+
+    ASSERT_FALSE(isColliding);
+}
+
 TEST_CASE(BoxBox_Collision_Edge)
 {
     RigidBody body1, body2;
@@ -295,7 +360,269 @@ TEST_CASE(BoxBox_Collision_Edge)
     ASSERT_TRUE(isColliding); // Edges barely touching
     ASSERT_NEAR(info.depth, 0.0f, 0.0001f); // Adjust based on your implementation
 }
+#pragma endregion
 
+#pragma region capsulecapsule
+TEST_CASE(CapsuleCapsuleCollision_NoCollision)
+{
+    RigidBody body1, body2;
+    body1.position = Vector3(0.0f, 0.0f, 0.0f);
+    body2.position = Vector3(3.0f, 0.0f, 0.0f);
+
+    Collider capsuleCollider1(Collider::CAPSULE, &body1);
+    Collider capsuleCollider2(Collider::CAPSULE, &body2);
+    capsuleCollider1.SetCapsuleRadius(1.0f);
+    capsuleCollider1.SetCapsuleHeight(2.0f);
+    capsuleCollider2.SetCapsuleRadius(1.0f);
+    capsuleCollider2.SetCapsuleHeight(2.0f);
+
+    CollisionInfo info;
+    bool result = CapsuleCapsuleCollision(capsuleCollider1, capsuleCollider2, info);
+
+    ASSERT_FALSE(result);
+}
+
+TEST_CASE(CapsuleCapsuleCollision_Collision)
+{
+    RigidBody body1, body2;
+    body1.position = Vector3(0.0f, 0.0f, 0.0f);
+    body2.position = Vector3(1.5f, 0.0f, 0.0f);
+
+    Collider capsuleCollider1(Collider::CAPSULE, &body1);
+    Collider capsuleCollider2(Collider::CAPSULE, &body2);
+    capsuleCollider1.SetCapsuleRadius(1.0f);
+    capsuleCollider1.SetCapsuleHeight(2.0f);
+    capsuleCollider2.SetCapsuleRadius(1.0f);
+    capsuleCollider2.SetCapsuleHeight(2.0f);
+
+    CollisionInfo info;
+    bool result = CapsuleCapsuleCollision(capsuleCollider1, capsuleCollider2, info);
+
+    ASSERT_TRUE(result);
+    ASSERT_FLOAT_EQUAL(info.depth, 0.5f);
+    ASSERT_EQUAL(info.normal.x, 1.0f);
+    ASSERT_EQUAL(info.normal.y, 0.0f);
+    ASSERT_EQUAL(info.normal.z, 0.0f);
+}
+
+TEST_CASE(CapsuleCapsuleCollision_Parallel)
+{
+    RigidBody body1, body2;
+    body1.position = Vector3(0.0f, 0.0f, 0.0f); // Capsule 1
+    body2.position = Vector3(0.0f, 1.5f, 0.0f); // Capsule 2 (parallel)
+
+    Collider capsule1(Collider::CAPSULE, &body1);
+    Collider capsule2(Collider::CAPSULE, &body2);
+    capsule1.SetCapsuleRadius(1.0f);
+    capsule1.SetCapsuleHeight(2.0f);
+    capsule2.SetCapsuleRadius(1.0f);
+    capsule2.SetCapsuleHeight(2.0f);
+
+    CollisionInfo info;
+    bool result = CapsuleCapsuleCollision(capsule1, capsule2, info);
+
+    ASSERT_TRUE(result);
+    ASSERT_FLOAT_EQUAL(info.depth, 2.0f);
+    ASSERT_EQUAL(info.normal.x, 0.0f);
+    ASSERT_EQUAL(info.normal.y, 1.0f);
+    ASSERT_EQUAL(info.normal.z, 0.0f);
+}
+
+TEST_CASE(CapsuleCapsuleCollision_Perpendicular)
+{
+    RigidBody body1, body2;
+    body1.position = Vector3(0.0f, 0.0f, 0.0f); // Capsule 1 (vertical)
+    body2.position = Vector3(1.5f, 0.0f, 0.0f); // Capsule 2 (horizontal)
+
+    Collider capsule1(Collider::CAPSULE, &body1);
+    Collider capsule2(Collider::CAPSULE, &body2);
+    capsule1.SetCapsuleRadius(1.0f);
+    capsule1.SetCapsuleHeight(2.0f);
+    capsule2.SetCapsuleRadius(1.0f);
+    capsule2.SetCapsuleHeight(2.0f);
+
+    CollisionInfo info;
+    bool result = CapsuleCapsuleCollision(capsule1, capsule2, info);
+
+    ASSERT_TRUE(result);
+    ASSERT_FLOAT_EQUAL(info.depth, 0.5f);
+    ASSERT_EQUAL(info.normal.x, 1.0f);
+    ASSERT_EQUAL(info.normal.y, 0.0f);
+    ASSERT_EQUAL(info.normal.z, 0.0f);
+}
+#pragma endregion
+
+#pragma region capsulesphere
+TEST_CASE(CapsuleSphereCollision_NoCollision)
+{
+    RigidBody body1, body2;
+    body1.position = Vector3(0.0f, 0.0f, 0.0f);
+    body2.position = Vector3(3.0f, 0.0f, 0.0f);
+
+    Collider capsuleCollider(Collider::CAPSULE, &body1);
+    capsuleCollider.SetCapsuleRadius(1.0f);
+    capsuleCollider.SetCapsuleHeight(2.0f);
+    Collider sphereCollider(Collider::SPHERE, &body2);
+    sphereCollider.SetSphereRadius(1.0f);
+
+    CollisionInfo info;
+    bool result = CapsuleSphereCollision(capsuleCollider, sphereCollider, info);
+
+    ASSERT_FALSE(result);
+}
+
+TEST_CASE(CapsuleSphereCollision_Collision)
+{
+    RigidBody body1, body2;
+    body1.position = Vector3(0.0f, 0.0f, 0.0f);
+    body2.position = Vector3(1.5f, 0.0f, 0.0f);
+
+    Collider capsuleCollider(Collider::CAPSULE, &body1);
+    capsuleCollider.SetCapsuleRadius(1.0f);
+    capsuleCollider.SetCapsuleHeight(2.0f);
+    Collider sphereCollider(Collider::SPHERE, &body2);
+    sphereCollider.SetSphereRadius(1.0f);
+
+    CollisionInfo info;
+    bool result = CapsuleSphereCollision(capsuleCollider, sphereCollider, info);
+
+    ASSERT_TRUE(result);
+    ASSERT_FLOAT_EQUAL(info.depth, 0.5f);
+    ASSERT_EQUAL(info.normal.x, 1.0f);
+    ASSERT_EQUAL(info.normal.y, 0.0f);
+    ASSERT_EQUAL(info.normal.z, 0.0f);
+}
+
+TEST_CASE(CapsuleSphereCollision_stacked)
+{
+    RigidBody body1, body2;
+    body1.position = Vector3(0.0f, 0.0f, 0.0f);
+    body2.position = Vector3(0.0f, 2.0f, 0.0f); // Sphere at capsule's top
+
+    Collider capsuleCollider(Collider::CAPSULE, &body1);
+    capsuleCollider.SetCapsuleRadius(1.0f);
+    capsuleCollider.SetCapsuleHeight(2.0f);
+
+    Collider sphereCollider(Collider::SPHERE, &body2);
+    sphereCollider.SetSphereRadius(1.0f);
+
+    CollisionInfo info;
+    bool result = CapsuleSphereCollision(capsuleCollider, sphereCollider, info);
+
+    ASSERT_TRUE(result);
+    ASSERT_FLOAT_EQUAL(info.depth, 1.0f);
+    ASSERT_EQUAL(info.normal.x, 0.0f);
+    ASSERT_EQUAL(info.normal.y, 1.0f);
+    ASSERT_EQUAL(info.normal.z, 0.0f);
+}
+
+TEST_CASE(CapsuleSphereCollision_NoOverlap)
+{
+    RigidBody body1, body2;
+    body1.position = Vector3(0.0f, 0.0f, 0.0f);
+    body2.position = Vector3(0.0f, 3.0f, 0.0f); // Sphere too far
+
+    Collider capsuleCollider(Collider::CAPSULE, &body1);
+    capsuleCollider.SetCapsuleRadius(1.0f);
+    capsuleCollider.SetCapsuleHeight(2.0f);
+
+    Collider sphereCollider(Collider::SPHERE, &body2);
+    sphereCollider.SetSphereRadius(1.0f);
+
+    CollisionInfo info;
+    bool result = CapsuleSphereCollision(capsuleCollider, sphereCollider, info);
+
+    ASSERT_FALSE(result);
+}
+#pragma endregion
+
+#pragma region capsulebox
+TEST_CASE(CapsuleBoxCollision_NoCollision)
+{
+    RigidBody body1, body2;
+    body1.position = Vector3(0.0f, 0.0f, 0.0f);
+    body2.position = Vector3(3.0f, 0.0f, 0.0f);
+
+    Collider capsuleCollider(Collider::CAPSULE, &body1);
+    capsuleCollider.SetCapsuleRadius(1.0f);
+    capsuleCollider.SetCapsuleHeight(2.0f);
+
+    Collider boxCollider(Collider::BOX, &body2);
+    boxCollider.SetBoxHalfExtents(Vector3(1.0f, 1.0f, 1.0f));
+
+    CollisionInfo info;
+    bool result = CapsuleBoxCollision(capsuleCollider, boxCollider, info);
+
+    ASSERT_FALSE(result);
+}
+
+TEST_CASE(CapsuleBoxCollision_Collision)
+{
+    RigidBody body1, body2;
+    body1.position = Vector3(0.0f, 0.0f, 0.0f);
+    body2.position = Vector3(1.5f, 0.0f, 0.0f);
+
+    Collider capsuleCollider(Collider::CAPSULE, &body1);
+    capsuleCollider.SetCapsuleRadius(1.0f);
+    capsuleCollider.SetCapsuleHeight(2.0f);
+
+    Collider boxCollider(Collider::BOX, &body2);
+    boxCollider.SetBoxHalfExtents(Vector3(1.0f, 1.0f, 1.0f));
+
+    CollisionInfo info;
+    bool result = CapsuleBoxCollision(capsuleCollider, boxCollider, info);
+
+    ASSERT_TRUE(result);
+    ASSERT_FLOAT_EQUAL(info.depth, 0.5f);
+    ASSERT_EQUAL(info.normal.x, 1.0f);
+    ASSERT_EQUAL(info.normal.y, 0.0f);
+    ASSERT_EQUAL(info.normal.z, 0.0f);
+}
+
+TEST_CASE(CapsuleBoxCollision_stacked)
+{
+    RigidBody body1, body2;
+    body1.position = Vector3(0.0f, 0.0f, 0.0f);
+    body2.position = Vector3(0.0f, 2.0f, 0.0f); // Box at capsule's top
+
+    Collider capsuleCollider(Collider::CAPSULE, &body1);
+    capsuleCollider.SetCapsuleRadius(1.0f);
+    capsuleCollider.SetCapsuleHeight(2.0f);
+
+    Collider boxCollider(Collider::BOX, &body2);
+    boxCollider.SetBoxHalfExtents(Vector3(1.0f, 1.0f, 1.0f));
+
+    CollisionInfo info;
+    bool result = CapsuleBoxCollision(capsuleCollider, boxCollider, info);
+
+    ASSERT_TRUE(result);
+    ASSERT_FLOAT_EQUAL(info.depth, 1.0f);
+    ASSERT_EQUAL(info.normal.x, 0.0f);
+    ASSERT_EQUAL(info.normal.y, 1.0f);
+    ASSERT_EQUAL(info.normal.z, 0.0f);
+}
+
+TEST_CASE(CapsuleBoxCollision_NoOverlap)
+{
+    RigidBody body1, body2;
+    body1.position = Vector3(0.0f, 0.0f, 0.0f); // Capsule
+    body2.position = Vector3(0.0f, 3.0f, 0.0f); // Box too far
+
+    Collider capsuleCollider(Collider::CAPSULE, &body1);
+    capsuleCollider.SetCapsuleRadius(1.0f);
+    capsuleCollider.SetCapsuleHeight(2.0f);
+
+    Collider boxCollider(Collider::BOX, &body2);
+    boxCollider.SetBoxHalfExtents(Vector3(1.0f, 1.0f, 1.0f));
+
+    CollisionInfo info;
+    bool result = CapsuleBoxCollision(capsuleCollider, boxCollider, info);
+
+    ASSERT_FALSE(result);
+}
+#pragma endregion
+
+#pragma region resolveCollision
 TEST_CASE(ResolveCollision_Impulse)
 {
     RigidBody body1(1.0f, 0.5f);

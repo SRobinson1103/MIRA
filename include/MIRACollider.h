@@ -11,7 +11,7 @@ namespace MIRA
 class Collider
 {
 public:
-    enum Type { SPHERE, BOX };
+    enum Type { SPHERE, BOX, CAPSULE };
     Type type;
     RigidBody* body; // Associated rigid body
 
@@ -22,6 +22,7 @@ private:
     {
         struct { float radius; } sphere;
         struct { Vector3 halfExtents; } box;
+        struct { float radius; float height; } capsule;
     };
 
 public:
@@ -39,6 +40,18 @@ public:
         return box.halfExtents;
     }
 
+    float GetCapsuleRadius() const
+    {
+        assert(type == CAPSULE && "Collider is not a capsule!");
+        return capsule.radius;
+    }
+
+    float GetCapsuleHeight() const
+    {
+        assert(type == CAPSULE && "Collider is not a capsule!");
+        return capsule.height;
+    }
+
     void SetSphereRadius(float radius)
     {
         assert(type == SPHERE && "Collider is not a sphere!");
@@ -50,11 +63,27 @@ public:
         assert(type == BOX && "Collider is not a box!");
         box.halfExtents = halfExtents;
     }
+
+    void SetCapsuleRadius(float radius)
+    {
+        assert(type == CAPSULE && "Collider is not a capsule!");
+        capsule.radius = radius;
+    }    
+    void SetCapsuleHeight(float height)
+    {
+        assert(type == CAPSULE && "Collider is not a capsule!");
+        capsule.height = height;
+    }
+
 #else // Release
     float GetSphereRadius() const { return sphere.radius; }
     const Vector3& GetBoxHalfExtents() const { return box.halfExtents; }
+    float GetCapsuleRadius() const { return capsule.rdius; }
+    float GetCapsuleHeight() const { return capsule.height; }
     void SetSphereRadius(float radius) { sphere.radius = radius; }
     void SetBoxHalfExtents(const Vector3& halfExtents) { box.halfExtents = halfExtents; }
+    void SetCapsuleRadius(float radius) { capsule.radius = radius; }
+    void SetCapsuleHeight(float height) { capsule.height = height; }
 #endif
 };
 /*

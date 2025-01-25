@@ -34,6 +34,9 @@ public:
     // Const version for read-only access
     const float& operator[](int index) const;
 
+    // Overloading negation operator
+    Vector3 operator-() const;
+
     // absolute value of each component
     Vector3 Abs() const;
 
@@ -48,6 +51,12 @@ public:
 
     // Normalize the vector
     Vector3 Normalized() const;
+
+    // Unit vector
+    Vector3 Unit() const;
+
+    // Axis with the smallest value
+    int MinAxis() const;
 
     // Distance between two vectors
     static float Distance(const Vector3& a, const Vector3& b);
