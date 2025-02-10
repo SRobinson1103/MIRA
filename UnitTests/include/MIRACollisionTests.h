@@ -1,3 +1,6 @@
+#ifndef MIRA_TCOLLISION_TESTS_H
+#define MIRA_TCOLLISION_TESTS_H
+
 #include "MIRATestFramework.h"
 
 #include "CollisionDetection.h"
@@ -9,7 +12,7 @@ using namespace MIRA;
 TEST_CASE(ComputeAABB2D_Circle)
 {
     RigidBody2D body;
-    Collider2D circle(&body, Collider2D::Type2D::CIRCLE);
+    Collider2D circle(1, &body, Collider2D::Type2D::CIRCLE);
     circle.SetCircleRadius(2.0f);
 
     AABB2D aabb = ComputeAABB2D(circle);
@@ -22,7 +25,7 @@ TEST_CASE(ComputeAABB2D_Circle)
 TEST_CASE(ComputeAABB2D_Rectangle)
 {
     RigidBody2D body;
-    Collider2D rect(&body, Collider2D::Type2D::RECTANGLE);
+    Collider2D rect(1, &body, Collider2D::Type2D::RECTANGLE);
     rect.SetRectLength(4.0f);
     rect.SetRectHeight(6.0f);
 
@@ -55,8 +58,8 @@ TEST_CASE(CircleCircleCollision_Overlapping)
     body1.position = Vector2(0.0f, 0.0f);
     body2.position = Vector2(1.5f, 0.0f);
 
-    Collider2D circle1(&body1, Collider2D::Type2D::CIRCLE);
-    Collider2D circle2(&body2, Collider2D::Type2D::CIRCLE);
+    Collider2D circle1(1, &body1, Collider2D::Type2D::CIRCLE);
+    Collider2D circle2(2, &body2, Collider2D::Type2D::CIRCLE);
     circle1.SetCircleRadius(1.0f);
     circle2.SetCircleRadius(1.0f);
 
@@ -74,8 +77,8 @@ TEST_CASE(CircleCircleCollision_NonOverlapping)
     body1.position = Vector2(0.0f, 0.0f);
     body2.position = Vector2(3.0f, 0.0f);
 
-    Collider2D circle1(&body1, Collider2D::Type2D::CIRCLE);
-    Collider2D circle2(&body2, Collider2D::Type2D::CIRCLE);
+    Collider2D circle1(1, &body1, Collider2D::Type2D::CIRCLE);
+    Collider2D circle2(2, &body2, Collider2D::Type2D::CIRCLE);
     circle1.SetCircleRadius(1.0f);
     circle2.SetCircleRadius(1.0f);
 
@@ -91,8 +94,8 @@ TEST_CASE(CircleCircleCollision_ZeroDistance)
     body1.position = Vector2(0.0f, 0.0f);
     body2.position = Vector2(0.0f, 0.0f);
 
-    Collider2D circle1(&body1, Collider2D::Type2D::CIRCLE);
-    Collider2D circle2(&body2, Collider2D::Type2D::CIRCLE);
+    Collider2D circle1(1, &body1, Collider2D::Type2D::CIRCLE);
+    Collider2D circle2(2, &body2, Collider2D::Type2D::CIRCLE);
     circle1.SetCircleRadius(1.0f);
     circle2.SetCircleRadius(1.0f);
 
@@ -112,8 +115,8 @@ TEST_CASE(CircleRectCollision_Overlapping)
     body1.position = Vector2(0.0f, 0.0f);
     body2.position = Vector2(1.5f, 0.0f);
 
-    Collider2D circle(&body1, Collider2D::Type2D::CIRCLE);
-    Collider2D rect(&body2, Collider2D::Type2D::RECTANGLE);
+    Collider2D circle(1, &body1, Collider2D::Type2D::CIRCLE);
+    Collider2D rect(2, &body2, Collider2D::Type2D::RECTANGLE);
     circle.SetCircleRadius(1.0f);
     rect.SetRectLength(2.0f);
     rect.SetRectHeight(2.0f);
@@ -132,8 +135,8 @@ TEST_CASE(CircleRectCollision_NonOverlapping)
     body1.position = Vector2(0.0f, 0.0f);
     body2.position = Vector2(3.0f, 0.0f);
 
-    Collider2D circle(&body1, Collider2D::Type2D::CIRCLE);
-    Collider2D rect(&body2, Collider2D::Type2D::RECTANGLE);
+    Collider2D circle(1, &body1, Collider2D::Type2D::CIRCLE);
+    Collider2D rect(2, &body2, Collider2D::Type2D::RECTANGLE);
     circle.SetCircleRadius(1.0f);
     rect.SetRectLength(2.0f);
     rect.SetRectHeight(2.0f);
@@ -150,8 +153,8 @@ TEST_CASE(CircleRectCollision_TouchingEdge)
     body1.position = Vector2(0.0f, 0.0f);  // Circle
     body2.position = Vector2(2.0f, 0.0f);  // Rectangle
 
-    Collider2D circle(&body1, Collider2D::Type2D::CIRCLE);
-    Collider2D rect(&body2, Collider2D::Type2D::RECTANGLE);
+    Collider2D circle(1, &body1, Collider2D::Type2D::CIRCLE);
+    Collider2D rect(2, &body2, Collider2D::Type2D::RECTANGLE);
     circle.SetCircleRadius(1.0f);
     rect.SetRectLength(2.0f);
     rect.SetRectHeight(2.0f);
@@ -170,8 +173,8 @@ TEST_CASE(CircleRectCollision_CircleInsideRect)
     body1.position = Vector2(0.0f, 0.0f);  // Circle
     body2.position = Vector2(0.0f, 0.0f);  // Rectangle
 
-    Collider2D circle(&body1, Collider2D::Type2D::CIRCLE);
-    Collider2D rect(&body2, Collider2D::Type2D::RECTANGLE);
+    Collider2D circle(1, &body1, Collider2D::Type2D::CIRCLE);
+    Collider2D rect(2, &body2, Collider2D::Type2D::RECTANGLE);
     circle.SetCircleRadius(1.0f);
     rect.SetRectLength(4.0f);
     rect.SetRectHeight(4.0f);
@@ -190,8 +193,8 @@ TEST_CASE(CircleRectCollision_CornerCase)
     body1.position = Vector2(3.0f, 3.0f);  // Circle
     body2.position = Vector2(2.0f, 2.0f);  // Rectangle (size 2x2)
 
-    Collider2D circle(&body1, Collider2D::Type2D::CIRCLE);
-    Collider2D rect(&body2, Collider2D::Type2D::RECTANGLE);
+    Collider2D circle(1, &body1, Collider2D::Type2D::CIRCLE);
+    Collider2D rect(2, &body2, Collider2D::Type2D::RECTANGLE);
     circle.SetCircleRadius(1.0f);
     rect.SetRectLength(2.0f);
     rect.SetRectHeight(2.0f);
@@ -214,8 +217,8 @@ TEST_CASE(RectRectCollision_Overlapping)
     body1.position = Vector2(0.0f, 0.0f);
     body2.position = Vector2(1.5f, 0.0f);
 
-    Collider2D rect1(&body1, Collider2D::Type2D::RECTANGLE);
-    Collider2D rect2(&body2, Collider2D::Type2D::RECTANGLE);
+    Collider2D rect1(1, &body1, Collider2D::Type2D::RECTANGLE);
+    Collider2D rect2(2, &body2, Collider2D::Type2D::RECTANGLE);
     rect1.SetRectLength(2.0f);
     rect1.SetRectHeight(2.0f);
     rect2.SetRectLength(2.0f);
@@ -235,8 +238,8 @@ TEST_CASE(RectRectCollision_NonOverlapping)
     body1.position = Vector2(0.0f, 0.0f);
     body2.position = Vector2(3.0f, 0.0f);
 
-    Collider2D rect1(&body1, Collider2D::Type2D::RECTANGLE);
-    Collider2D rect2(&body2, Collider2D::Type2D::RECTANGLE);
+    Collider2D rect1(1, &body1, Collider2D::Type2D::RECTANGLE);
+    Collider2D rect2(2, &body2, Collider2D::Type2D::RECTANGLE);
     rect1.SetRectLength(2.0f);
     rect1.SetRectHeight(2.0f);
     rect2.SetRectLength(2.0f);
@@ -254,8 +257,8 @@ TEST_CASE(RectRectCollision_TouchingEdge)
     body1.position = Vector2(0.0f, 0.0f);
     body2.position = Vector2(2.0f, 0.0f);  // Exactly touching
 
-    Collider2D rect1(&body1, Collider2D::Type2D::RECTANGLE);
-    Collider2D rect2(&body2, Collider2D::Type2D::RECTANGLE);
+    Collider2D rect1(1, &body1, Collider2D::Type2D::RECTANGLE);
+    Collider2D rect2(2, &body2, Collider2D::Type2D::RECTANGLE);
     rect1.SetRectLength(2.0f);
     rect1.SetRectHeight(2.0f);
     rect2.SetRectLength(2.0f);
@@ -274,8 +277,8 @@ TEST_CASE(RectRectCollision_CompleteContainment)
     body1.position = Vector2(0.0f, 0.0f);  // Larger rect
     body2.position = Vector2(0.0f, 0.0f);  // Smaller rect
 
-    Collider2D rect1(&body1, Collider2D::Type2D::RECTANGLE);
-    Collider2D rect2(&body2, Collider2D::Type2D::RECTANGLE);
+    Collider2D rect1(1, &body1, Collider2D::Type2D::RECTANGLE);
+    Collider2D rect2(2, &body2, Collider2D::Type2D::RECTANGLE);
     rect1.SetRectLength(4.0f);
     rect1.SetRectHeight(4.0f);
     rect2.SetRectLength(2.0f);
@@ -295,8 +298,8 @@ TEST_CASE(RectRectCollision_PartialOverlap)
     body1.position = Vector2(0.0f, 0.0f);
     body2.position = Vector2(1.5f, 3.0f);  // Overlap on X but not Y
 
-    Collider2D rect1(&body1, Collider2D::Type2D::RECTANGLE);
-    Collider2D rect2(&body2, Collider2D::Type2D::RECTANGLE);
+    Collider2D rect1(1, &body1, Collider2D::Type2D::RECTANGLE);
+    Collider2D rect2(2, &body2, Collider2D::Type2D::RECTANGLE);
     rect1.SetRectLength(2.0f);
     rect1.SetRectHeight(2.0f);
     rect2.SetRectLength(2.0f);
@@ -366,7 +369,7 @@ TEST_CASE(SphereCollider_AABB)
     RigidBody body;
     body.position = Vector3(1.0f, 2.0f, 3.0f);
 
-    Collider sphereCollider(Collider::SPHERE, &body);
+    Collider sphereCollider(1, Collider::SPHERE, &body);
     sphereCollider.SetSphereRadius(2.0f);
 
     AABB aabb = ComputeAABB(sphereCollider);
@@ -385,7 +388,7 @@ TEST_CASE(BoxCollider_AABB)
 {
     RigidBody body;
     body.position = Vector3(0.0f, 0.0f, 0.0f);
-    Collider boxCollider(Collider::BOX, &body);
+    Collider boxCollider(1, Collider::BOX, &body);
     boxCollider.SetBoxHalfExtents(Vector3(1.0f, 2.0f, 3.0f));
 
     AABB aabb = ComputeAABB(boxCollider);
@@ -397,7 +400,7 @@ TEST_CASE(BoxCollider_NonUniformHalfExtents)
 {
     RigidBody body;
     body.position = Vector3(2.0f, 3.0f, 4.0f);
-    Collider boxCollider(Collider::BOX, &body);
+    Collider boxCollider(1, Collider::BOX, &body);
     boxCollider.SetBoxHalfExtents(Vector3(1.0f, 2.0f, 3.0f));
 
     AABB aabb = ComputeAABB(boxCollider);
@@ -409,7 +412,7 @@ TEST_CASE(BoxCollider_NonUniformHalfExtents)
 TEST_CASE(SphereCollider_NegativeRadius)
 {
     RigidBody body;
-    Collider sphereCollider(Collider::SPHERE, &body);
+    Collider sphereCollider(1, Collider::SPHERE, &body);
     sphereCollider.SetSphereRadius(-1.0f);
 
     AABB aabb = ComputeAABB(sphereCollider);
@@ -421,7 +424,7 @@ TEST_CASE(ComputeAABB_Capsule)
     RigidBody body;
     body.position = Vector3(0.0f, 0.0f, 0.0f);
 
-    Collider capsuleCollider(Collider::CAPSULE, &body);
+    Collider capsuleCollider(1, Collider::CAPSULE, &body);
     capsuleCollider.SetCapsuleRadius(1.0f);
     capsuleCollider.SetCapsuleHeight(2.0f);
 
@@ -443,7 +446,7 @@ TEST_CASE(ComputeAABB_Capsule_Offset)
     RigidBody body;
     body.position = Vector3(1.0f, 2.0f, 3.0f);
 
-    Collider capsuleCollider(Collider::CAPSULE, &body);
+    Collider capsuleCollider(1, Collider::CAPSULE, &body);
     capsuleCollider.SetCapsuleRadius(1.0f);
     capsuleCollider.SetCapsuleHeight(2.0f);
 
@@ -468,9 +471,9 @@ TEST_CASE(SphereSphere_Collision)
     body1.position = Vector3(0.0f, 0.0f, 0.0f);
     body2.position = Vector3(3.0f, 0.0f, 0.0f);
 
-    Collider sphereCollider1(Collider::SPHERE, &body1);
+    Collider sphereCollider1(1, Collider::SPHERE, &body1);
     sphereCollider1.SetSphereRadius(2.0f);
-    Collider sphereCollider2(Collider::SPHERE, &body2);
+    Collider sphereCollider2(2, Collider::SPHERE, &body2);
     sphereCollider2.SetSphereRadius(2.0f);
 
     CollisionInfo info;
@@ -487,9 +490,9 @@ TEST_CASE(SphereSphere_NoCollision)
     body1.position = Vector3(0.0f, 0.0f, 0.0f);
     body2.position = Vector3(5.0f, 0.0f, 0.0f);
 
-    Collider sphereCollider1(Collider::SPHERE, &body1);
+    Collider sphereCollider1(1, Collider::SPHERE, &body1);
     sphereCollider1.SetSphereRadius(2.0f);
-    Collider sphereCollider2(Collider::SPHERE, &body2);
+    Collider sphereCollider2(2, Collider::SPHERE, &body2);
     sphereCollider2.SetSphereRadius(2.0f);
 
     CollisionInfo info;
@@ -504,9 +507,9 @@ TEST_CASE(SphereSphere_LargeVelocity)
     body1.velocity = Vector3(1000.0f, 0.0f, 0.0f);
     body2.velocity = Vector3(-1000.0f, 0.0f, 0.0f);
 
-    Collider sphereCollider1(Collider::SPHERE, &body1);
+    Collider sphereCollider1(1, Collider::SPHERE, &body1);
     sphereCollider1.SetSphereRadius(1.0f);
-    Collider sphereCollider2(Collider::SPHERE, &body2);
+    Collider sphereCollider2(2, Collider::SPHERE, &body2);
     sphereCollider2.SetSphereRadius(1.0f);
 
     CollisionInfo info;
@@ -523,9 +526,9 @@ TEST_CASE(SphereSphere_NoCollision_MovingApart)
     body1.velocity = Vector3(-1.0f, 0.0f, 0.0f);
     body2.velocity = Vector3(1.0f, 0.0f, 0.0f);
 
-    Collider sphereCollider1(Collider::SPHERE, &body1);
+    Collider sphereCollider1(1, Collider::SPHERE, &body1);
     sphereCollider1.SetSphereRadius(1.0f);
-    Collider sphereCollider2(Collider::SPHERE, &body2);
+    Collider sphereCollider2(2, Collider::SPHERE, &body2);
     sphereCollider2.SetSphereRadius(1.0f);
 
     CollisionInfo info;
@@ -542,9 +545,9 @@ TEST_CASE(SphereBox_Collision_Outside)
     sphereBody.position = Vector3(3.0f, 0.0f, 0.0f);
     boxBody.position = Vector3(0.0f, 0.0f, 0.0f);
 
-    Collider sphereCollider(Collider::SPHERE, &sphereBody);
+    Collider sphereCollider(1, Collider::SPHERE, &sphereBody);
     sphereCollider.SetSphereRadius(2.0f);
-    Collider boxCollider(Collider::BOX, &boxBody);
+    Collider boxCollider(2, Collider::BOX, &boxBody);
     boxCollider.SetBoxHalfExtents(Vector3(2.0f, 2.0f, 2.0f));
 
     CollisionInfo info;
@@ -561,9 +564,9 @@ TEST_CASE(SphereBox_Collision_Inside)
     sphereBody.position = Vector3(0.0f, 0.0f, 0.0f);
     boxBody.position = Vector3(0.0f, 0.0f, 0.0f);
 
-    Collider sphereCollider(Collider::SPHERE, &sphereBody);
+    Collider sphereCollider(1, Collider::SPHERE, &sphereBody);
     sphereCollider.SetSphereRadius(1.0f);
-    Collider boxCollider(Collider::BOX, &boxBody);
+    Collider boxCollider(2, Collider::BOX, &boxBody);
     boxCollider.SetBoxHalfExtents(Vector3(2.0f, 2.0f, 2.0f)); // Box encloses sphere
 
     CollisionInfo info;
@@ -580,9 +583,9 @@ TEST_CASE(SphereBox_Collision_EdgeTouching)
     sphereBody.position = Vector3(3.0f, 0.0f, 0.0f);
     boxBody.position = Vector3(0.0f, 0.0f, 0.0f);
 
-    Collider sphereCollider(Collider::SPHERE, &sphereBody);
+    Collider sphereCollider(1, Collider::SPHERE, &sphereBody);
     sphereCollider.SetSphereRadius(1.0f);
-    Collider boxCollider(Collider::BOX, &boxBody);
+    Collider boxCollider(2, Collider::BOX, &boxBody);
     boxCollider.SetBoxHalfExtents(Vector3(2.0f, 2.0f, 2.0f));
 
     CollisionInfo info;
@@ -598,9 +601,9 @@ TEST_CASE(SphereBox_NoCollision)
     sphereBody.position = Vector3(5.0f, 0.0f, 0.0f);
     boxBody.position = Vector3(0.0f, 0.0f, 0.0f);
 
-    Collider sphereCollider(Collider::SPHERE, &sphereBody);
+    Collider sphereCollider(1, Collider::SPHERE, &sphereBody);
     sphereCollider.SetSphereRadius(1.0f);
-    Collider boxCollider(Collider::BOX, &boxBody);
+    Collider boxCollider(2, Collider::BOX, &boxBody);
     boxCollider.SetBoxHalfExtents(Vector3(2.0f, 2.0f, 2.0f));
 
     CollisionInfo info;
@@ -617,9 +620,9 @@ TEST_CASE(BoxBox_Collision)
     body1.position = Vector3(0.0f, 0.0f, 0.0f);
     body2.position = Vector3(1.5f, 0.0f, 0.0f);
 
-    Collider boxCollider1(Collider::BOX, &body1);
+    Collider boxCollider1(1, Collider::BOX, &body1);
     boxCollider1.SetBoxHalfExtents(Vector3(1.0f, 1.0f, 1.0f));
-    Collider boxCollider2(Collider::BOX, &body2);
+    Collider boxCollider2(2, Collider::BOX, &body2);
     boxCollider2.SetBoxHalfExtents(Vector3(1.0f, 1.0f, 1.0f));
 
     CollisionInfo info;
@@ -636,9 +639,9 @@ TEST_CASE(BoxBoxCollision_NoCollision)
     body1.position = Vector3(0.0f, 0.0f, 0.0f);
     body2.position = Vector3(3.0f, 0.0f, 0.0f);
 
-    Collider boxCollider1(Collider::BOX, &body1);
+    Collider boxCollider1(1, Collider::BOX, &body1);
     boxCollider1.SetBoxHalfExtents(Vector3(1.0f, 1.0f, 1.0f));
-    Collider boxCollider2(Collider::BOX, &body2);
+    Collider boxCollider2(2, Collider::BOX, &body2);
     boxCollider2.SetBoxHalfExtents(Vector3(1.0f, 1.0f, 1.0f));
 
     CollisionInfo info;
@@ -653,9 +656,9 @@ TEST_CASE(BoxBox_Collision_Edge)
     body1.position = Vector3(0.0f, 0.0f, 0.0f);
     body2.position = Vector3(2.0f, 0.0f, 0.0f);
 
-    Collider boxCollider1(Collider::BOX, &body1);
+    Collider boxCollider1(1, Collider::BOX, &body1);
     boxCollider1.SetBoxHalfExtents(Vector3(1.0f, 1.0f, 1.0f));
-    Collider boxCollider2(Collider::BOX, &body2);
+    Collider boxCollider2(2, Collider::BOX, &body2);
     boxCollider2.SetBoxHalfExtents(Vector3(1.0f, 1.0f, 1.0f));
 
     CollisionInfo info;
@@ -673,8 +676,8 @@ TEST_CASE(CapsuleCapsuleCollision_NoCollision)
     body1.position = Vector3(0.0f, 0.0f, 0.0f);
     body2.position = Vector3(3.0f, 0.0f, 0.0f);
 
-    Collider capsuleCollider1(Collider::CAPSULE, &body1);
-    Collider capsuleCollider2(Collider::CAPSULE, &body2);
+    Collider capsuleCollider1(1, Collider::CAPSULE, &body1);
+    Collider capsuleCollider2(2, Collider::CAPSULE, &body2);
     capsuleCollider1.SetCapsuleRadius(1.0f);
     capsuleCollider1.SetCapsuleHeight(2.0f);
     capsuleCollider2.SetCapsuleRadius(1.0f);
@@ -692,8 +695,8 @@ TEST_CASE(CapsuleCapsuleCollision_Collision)
     body1.position = Vector3(0.0f, 0.0f, 0.0f);
     body2.position = Vector3(1.5f, 0.0f, 0.0f);
 
-    Collider capsuleCollider1(Collider::CAPSULE, &body1);
-    Collider capsuleCollider2(Collider::CAPSULE, &body2);
+    Collider capsuleCollider1(1, Collider::CAPSULE, &body1);
+    Collider capsuleCollider2(2, Collider::CAPSULE, &body2);
     capsuleCollider1.SetCapsuleRadius(1.0f);
     capsuleCollider1.SetCapsuleHeight(2.0f);
     capsuleCollider2.SetCapsuleRadius(1.0f);
@@ -715,8 +718,8 @@ TEST_CASE(CapsuleCapsuleCollision_Parallel)
     body1.position = Vector3(0.0f, 0.0f, 0.0f); // Capsule 1
     body2.position = Vector3(0.0f, 1.5f, 0.0f); // Capsule 2 (parallel)
 
-    Collider capsule1(Collider::CAPSULE, &body1);
-    Collider capsule2(Collider::CAPSULE, &body2);
+    Collider capsule1(1, Collider::CAPSULE, &body1);
+    Collider capsule2(2, Collider::CAPSULE, &body2);
     capsule1.SetCapsuleRadius(1.0f);
     capsule1.SetCapsuleHeight(2.0f);
     capsule2.SetCapsuleRadius(1.0f);
@@ -738,8 +741,8 @@ TEST_CASE(CapsuleCapsuleCollision_Perpendicular)
     body1.position = Vector3(0.0f, 0.0f, 0.0f); // Capsule 1 (vertical)
     body2.position = Vector3(1.5f, 0.0f, 0.0f); // Capsule 2 (horizontal)
 
-    Collider capsule1(Collider::CAPSULE, &body1);
-    Collider capsule2(Collider::CAPSULE, &body2);
+    Collider capsule1(1, Collider::CAPSULE, &body1);
+    Collider capsule2(2, Collider::CAPSULE, &body2);
     capsule1.SetCapsuleRadius(1.0f);
     capsule1.SetCapsuleHeight(2.0f);
     capsule2.SetCapsuleRadius(1.0f);
@@ -763,10 +766,10 @@ TEST_CASE(CapsuleSphereCollision_NoCollision)
     body1.position = Vector3(0.0f, 0.0f, 0.0f);
     body2.position = Vector3(3.0f, 0.0f, 0.0f);
 
-    Collider capsuleCollider(Collider::CAPSULE, &body1);
+    Collider capsuleCollider(1, Collider::CAPSULE, &body1);
     capsuleCollider.SetCapsuleRadius(1.0f);
     capsuleCollider.SetCapsuleHeight(2.0f);
-    Collider sphereCollider(Collider::SPHERE, &body2);
+    Collider sphereCollider(2, Collider::SPHERE, &body2);
     sphereCollider.SetSphereRadius(1.0f);
 
     CollisionInfo info;
@@ -781,10 +784,10 @@ TEST_CASE(CapsuleSphereCollision_Collision)
     body1.position = Vector3(0.0f, 0.0f, 0.0f);
     body2.position = Vector3(1.5f, 0.0f, 0.0f);
 
-    Collider capsuleCollider(Collider::CAPSULE, &body1);
+    Collider capsuleCollider(1, Collider::CAPSULE, &body1);
     capsuleCollider.SetCapsuleRadius(1.0f);
     capsuleCollider.SetCapsuleHeight(2.0f);
-    Collider sphereCollider(Collider::SPHERE, &body2);
+    Collider sphereCollider(2, Collider::SPHERE, &body2);
     sphereCollider.SetSphereRadius(1.0f);
 
     CollisionInfo info;
@@ -803,11 +806,11 @@ TEST_CASE(CapsuleSphereCollision_stacked)
     body1.position = Vector3(0.0f, 0.0f, 0.0f);
     body2.position = Vector3(0.0f, 2.0f, 0.0f); // Sphere at capsule's top
 
-    Collider capsuleCollider(Collider::CAPSULE, &body1);
+    Collider capsuleCollider(1, Collider::CAPSULE, &body1);
     capsuleCollider.SetCapsuleRadius(1.0f);
     capsuleCollider.SetCapsuleHeight(2.0f);
 
-    Collider sphereCollider(Collider::SPHERE, &body2);
+    Collider sphereCollider(2, Collider::SPHERE, &body2);
     sphereCollider.SetSphereRadius(1.0f);
 
     CollisionInfo info;
@@ -826,11 +829,11 @@ TEST_CASE(CapsuleSphereCollision_NoOverlap)
     body1.position = Vector3(0.0f, 0.0f, 0.0f);
     body2.position = Vector3(0.0f, 3.0f, 0.0f); // Sphere too far
 
-    Collider capsuleCollider(Collider::CAPSULE, &body1);
+    Collider capsuleCollider(1, Collider::CAPSULE, &body1);
     capsuleCollider.SetCapsuleRadius(1.0f);
     capsuleCollider.SetCapsuleHeight(2.0f);
 
-    Collider sphereCollider(Collider::SPHERE, &body2);
+    Collider sphereCollider(2, Collider::SPHERE, &body2);
     sphereCollider.SetSphereRadius(1.0f);
 
     CollisionInfo info;
@@ -847,11 +850,11 @@ TEST_CASE(CapsuleBoxCollision_NoCollision)
     body1.position = Vector3(0.0f, 0.0f, 0.0f);
     body2.position = Vector3(3.0f, 0.0f, 0.0f);
 
-    Collider capsuleCollider(Collider::CAPSULE, &body1);
+    Collider capsuleCollider(1, Collider::CAPSULE, &body1);
     capsuleCollider.SetCapsuleRadius(1.0f);
     capsuleCollider.SetCapsuleHeight(2.0f);
 
-    Collider boxCollider(Collider::BOX, &body2);
+    Collider boxCollider(2, Collider::BOX, &body2);
     boxCollider.SetBoxHalfExtents(Vector3(1.0f, 1.0f, 1.0f));
 
     CollisionInfo info;
@@ -866,11 +869,11 @@ TEST_CASE(CapsuleBoxCollision_Collision)
     body1.position = Vector3(0.0f, 0.0f, 0.0f);
     body2.position = Vector3(1.5f, 0.0f, 0.0f);
 
-    Collider capsuleCollider(Collider::CAPSULE, &body1);
+    Collider capsuleCollider(1, Collider::CAPSULE, &body1);
     capsuleCollider.SetCapsuleRadius(1.0f);
     capsuleCollider.SetCapsuleHeight(2.0f);
 
-    Collider boxCollider(Collider::BOX, &body2);
+    Collider boxCollider(2, Collider::BOX, &body2);
     boxCollider.SetBoxHalfExtents(Vector3(1.0f, 1.0f, 1.0f));
 
     CollisionInfo info;
@@ -889,11 +892,11 @@ TEST_CASE(CapsuleBoxCollision_stacked)
     body1.position = Vector3(0.0f, 0.0f, 0.0f);
     body2.position = Vector3(0.0f, 2.0f, 0.0f); // Box at capsule's top
 
-    Collider capsuleCollider(Collider::CAPSULE, &body1);
+    Collider capsuleCollider(1, Collider::CAPSULE, &body1);
     capsuleCollider.SetCapsuleRadius(1.0f);
     capsuleCollider.SetCapsuleHeight(2.0f);
 
-    Collider boxCollider(Collider::BOX, &body2);
+    Collider boxCollider(2, Collider::BOX, &body2);
     boxCollider.SetBoxHalfExtents(Vector3(1.0f, 1.0f, 1.0f));
 
     CollisionInfo info;
@@ -912,11 +915,11 @@ TEST_CASE(CapsuleBoxCollision_NoOverlap)
     body1.position = Vector3(0.0f, 0.0f, 0.0f); // Capsule
     body2.position = Vector3(0.0f, 3.0f, 0.0f); // Box too far
 
-    Collider capsuleCollider(Collider::CAPSULE, &body1);
+    Collider capsuleCollider(1, Collider::CAPSULE, &body1);
     capsuleCollider.SetCapsuleRadius(1.0f);
     capsuleCollider.SetCapsuleHeight(2.0f);
 
-    Collider boxCollider(Collider::BOX, &body2);
+    Collider boxCollider(2, Collider::BOX, &body2);
     boxCollider.SetBoxHalfExtents(Vector3(1.0f, 1.0f, 1.0f));
 
     CollisionInfo info;
@@ -1022,3 +1025,5 @@ TEST_CASE(ResolveCollision_RestingContact)
     ASSERT_NEAR(body2.velocity.x, 0.0f, 0.0001f);
 }
 #pragma endregion
+
+#endif

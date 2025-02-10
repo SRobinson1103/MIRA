@@ -7,17 +7,26 @@
 
 namespace MIRA
 {
-// Avoids polymorphism for slight performance gains
+struct AABB
+{
+    MIRA::Vector3 min; // bottom-left-back
+    MIRA::Vector3 max; // top-right-front
+};
+
 class Collider
 {
 public:
+    int id;
     enum Type { SPHERE, BOX, CAPSULE };
     Type type;
     RigidBody* body; // Associated rigid body
+    AABB bounds;
 
-    Collider(Type type, RigidBody* body);
+    Collider(int id, Type type, RigidBody* body);
+    Collider(int id, Type type, RigidBody* body, AABB& aabb);
 
 private:
+    // Avoids polymorphism for performance gains
     union
     {
         struct { float radius; } sphere;
@@ -27,6 +36,11 @@ private:
     };
 
 public:
+    void UpdateBounds(const AABB& newBounds) 
+    {
+        bounds = newBounds;
+    }
+
     // Debug only accessors and setters with validation
 #if !defined(NDEBUG)
     float GetSphereRadius() const
@@ -75,7 +89,6 @@ public:
         assert(type == CAPSULE && "Collider is not a capsule!");
         capsule.height = height;
     }
-
 #else // Release
     float GetSphereRadius() const { return sphere.radius; }
     const Vector3& GetBoxHalfExtents() const { return box.halfExtents; }

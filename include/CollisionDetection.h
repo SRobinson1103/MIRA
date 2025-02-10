@@ -4,28 +4,21 @@
 #include "MIRAVector.h"
 #include "MIRACollider.h"
 
-// Axis-aligned bounding box
-struct AABB
-{
-    MIRA::Vector3 min; // bottom-left-back
-    MIRA::Vector3 max; // top-right-front
-};
-
 struct CollisionInfo
 {
     MIRA::Vector3 normal; // Collision normal, direction to resolve
     float depth;          // Penetration depth
 };
 
-AABB ComputeAABB(const MIRA::Collider& collider);
+MIRA::AABB ComputeAABB(const MIRA::Collider& collider);
 
-bool CheckAABBOverlap(const AABB& a, const AABB& b);
+bool CheckAABBOverlap(const MIRA::AABB& a, const MIRA::AABB& b);
 
 // Find the closest point on a line segment [A, B] to a point P
 MIRA::Vector3 ClosestPointOnLineSegment(const MIRA::Vector3& A, const MIRA::Vector3& B, const MIRA::Vector3& P);
 
 // Check if a line segment [start, end] overlaps with an AABB
-bool CheckLineSegmentAABBOverlap(const MIRA::Vector3& start, const MIRA::Vector3& end, const AABB& aabb);
+bool CheckLineSegmentAABBOverlap(const MIRA::Vector3& start, const MIRA::Vector3& end, const MIRA::AABB& aabb);
 
 // Find the clostest point between two line segments
 void ClosestPointsBetweenLineSegments(const MIRA::Vector3& A1, const MIRA::Vector3& B1,

@@ -2,7 +2,7 @@
 
 using namespace MIRA;
 
-Collider2D::Collider2D(RigidBody2D* body, Type2D type) : type(type), body(body)
+Collider2D::Collider2D(int id, RigidBody2D* body, Type2D type) : id(id), type(type), body(body)
 {
 	if (type == CIRCLE)
 	{
@@ -13,4 +13,9 @@ Collider2D::Collider2D(RigidBody2D* body, Type2D type) : type(type), body(body)
 		rect.length = 0.0f;
 		rect.height = 0.0f;
 	}
+}
+
+MIRA::Collider2D::Collider2D(int id, RigidBody2D* body, Type2D type, AABB2D& aabb) : Collider2D(id, body, type)
+{
+	bounds = aabb;
 }

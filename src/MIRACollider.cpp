@@ -2,7 +2,7 @@
 
 using namespace MIRA;
 
-Collider::Collider(Type type, RigidBody* body) : type(type), body(body)
+Collider::Collider(int id, Type type, RigidBody* body) : id(id), type(type), body(body)
 {
     if (type == SPHERE)
     {
@@ -17,4 +17,9 @@ Collider::Collider(Type type, RigidBody* body) : type(type), body(body)
         capsule.height = 0.0f;
         capsule.radius = 0.0f;
     }
+}
+
+MIRA::Collider::Collider(int id, Type type, RigidBody* body, AABB& aabb) : Collider(id, type, body)
+{
+    bounds = aabb;
 }

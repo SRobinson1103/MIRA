@@ -1,8 +1,15 @@
-#include "MIRAMathTests.h"
+#include "MIRABroadPhaseGridTests.h"
 #include "MIRACollisionTests.h"
+#include "MIRAMathTests.h"
+
 
 int main()
 {
+#ifdef _DEBUG
+    std::cout << "Attach to process now." << std::endl;
+    getchar();
+#endif
+
     auto& tests = TestRegistry::instance().tests;
     int passed = 0, failed = 0;
 

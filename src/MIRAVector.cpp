@@ -81,6 +81,10 @@ const float& Vector3::operator[](int index) const
 
 Vector3 Vector3::operator-() const { return Vector3(-x, -y, -z); }
 
+bool Vector3::operator==(const Vector3& other) const { return x == other.x && y == other.y && z == other.z; }
+
+bool Vector3::operator!=(const Vector3& other) const { return !(*this == other); }
+
 Vector3 Vector3::Abs() const { return Vector3(std::fabs(x), std::fabs(y), std::fabs(z)); }
 
 float Vector3::Dot(const Vector3& other) const { return x * other.x + y * other.y + z * other.z; }

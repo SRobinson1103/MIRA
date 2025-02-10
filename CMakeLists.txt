@@ -9,6 +9,7 @@ endif()
 project ("MIRA")
 
 set(SOURCE_FILES
+        ${PROJECT_SOURCE_DIR}/include/Export.h
         ${PROJECT_SOURCE_DIR}/include/MIRAVector.h
         ${PROJECT_SOURCE_DIR}/include/MIRAMatrix.h
         ${PROJECT_SOURCE_DIR}/include/MIRAQuaternion.h
@@ -18,6 +19,7 @@ set(SOURCE_FILES
         ${PROJECT_SOURCE_DIR}/include/MIRARigidBody2D.h
         ${PROJECT_SOURCE_DIR}/include/MIRACollider2D.h
         ${PROJECT_SOURCE_DIR}/include/CollisionDetection2D.h
+        ${PROJECT_SOURCE_DIR}/include/BroadPhaseGrid.h
         ${PROJECT_SOURCE_DIR}/src/MIRAVector.cpp
         ${PROJECT_SOURCE_DIR}/src/MIRAMatrix.cpp
         ${PROJECT_SOURCE_DIR}/src/MIRAQuaternion.cpp
@@ -27,18 +29,22 @@ set(SOURCE_FILES
         ${PROJECT_SOURCE_DIR}/src/MIRARigidBody2D.cpp
         ${PROJECT_SOURCE_DIR}/src/MIRACollider2D.cpp
         ${PROJECT_SOURCE_DIR}/src/CollisionDetection2D.cpp
-    )
+        ${PROJECT_SOURCE_DIR}/src/BroadPhaseGrid.cpp
+)
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
-# Create executable
-add_executable (MIRA ${PROJECT_SOURCE_DIR}/src/main.cpp ${SOURCE_FILES})
+# Create library
+add_library(MIRA SHARED ${PROJECT_SOURCE_DIR}/src/main.cpp ${SOURCE_FILES})
 
-############################ tests ############################
+target_compile_definitions(MIRA PRIVATE PROJECT_EXPORTS)
+
+############################ Unit Tests ############################
 set(SOURCE_FILES_TEST
     ${CMAKE_SOURCE_DIR}/UnitTests/include/MIRATestFramework.h
-    ${CMAKE_SOURCE_DIR}/UnitTests/include/MIRAMathTests.h
+    ${CMAKE_SOURCE_DIR}/UnitTests/include/MIRABroadPhaseGridTests.h
     ${CMAKE_SOURCE_DIR}/UnitTests/include/MIRACollisionTests.h
+    ${CMAKE_SOURCE_DIR}/UnitTests/include/MIRAMathTests.h
     ${CMAKE_SOURCE_DIR}/include/MIRAVector.h
     ${CMAKE_SOURCE_DIR}/include/MIRAMatrix.h
     ${CMAKE_SOURCE_DIR}/include/MIRAQuaternion.h
@@ -48,6 +54,7 @@ set(SOURCE_FILES_TEST
     ${CMAKE_SOURCE_DIR}/include/MIRARigidBody2D.h
     ${CMAKE_SOURCE_DIR}/include/MIRACollider2D.h
     ${CMAKE_SOURCE_DIR}/include/CollisionDetection2D.h
+    ${CMAKE_SOURCE_DIR}/include/BroadPhaseGrid.h
     ${CMAKE_SOURCE_DIR}/src/MIRAVector.cpp
     ${CMAKE_SOURCE_DIR}/src/MIRAMatrix.cpp
     ${CMAKE_SOURCE_DIR}/src/MIRAQuaternion.cpp
@@ -57,16 +64,16 @@ set(SOURCE_FILES_TEST
     ${CMAKE_SOURCE_DIR}/src/MIRARigidBody2D.cpp
     ${CMAKE_SOURCE_DIR}/src/MIRACollider2D.cpp
     ${CMAKE_SOURCE_DIR}/src/CollisionDetection2D.cpp
+    ${CMAKE_SOURCE_DIR}/src/BroadPhaseGrid.cpp
 )
 
 include_directories(${CMAKE_SOURCE_DIR}/UnitTests/include)
 
 # Create a test executable
-add_executable(MIRA_tests ${CMAKE_SOURCE_DIR}/UnitTests/UnitTestMain.cpp ${SOURCE_FILES_TEST} "include/MIRACollider2D.h")
+add_executable(MIRA_tests ${CMAKE_SOURCE_DIR}/UnitTests/UnitTestMain.cpp ${SOURCE_FILES_TEST})
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET MIRA PROPERTY CXX_STANDARD 20)
   set_property(TARGET MIRA_tests PROPERTY CXX_STANDARD 20)
 endif()
 
-# TODO: Add tests and install targets if needed.

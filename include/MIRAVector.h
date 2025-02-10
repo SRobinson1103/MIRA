@@ -11,6 +11,8 @@ public:
 
     Vector2();
     Vector2(float x, float y);
+    Vector2(const Vector2& other) = default;
+    Vector2& operator=(const Vector2& other) = default;
 
     // Basic arithmetic operations
     Vector2 operator+(const Vector2& other) const;
@@ -48,10 +50,10 @@ public:
     float x, y, z;
 
     Vector3();
-
     Vector3(float scalar);
-
     Vector3(float x, float y, float z);
+    Vector3(const Vector3& other) = default;
+    Vector3& operator=(const Vector3& other) = default;
 
     // Addition
     Vector3 operator+(const Vector3& other) const;
@@ -73,6 +75,11 @@ public:
 
     // Overloading negation operator
     Vector3 operator-() const;
+
+    // Comparison operators
+    bool operator==(const Vector3& other) const;
+
+    bool operator!=(const Vector3& other) const;
 
     // absolute value of each component
     Vector3 Abs() const;

@@ -1,3 +1,6 @@
+#ifndef MIRA_MATH_TESTS_H
+#define MIRA_MATH_TESTS_H
+
 #include "MIRATestFramework.h"
 
 #include "MIRAVector.h"
@@ -549,3 +552,5 @@ TEST_CASE(Quaternion_FromAxisAngle)
     ASSERT_NEAR(q.z, 0.0f, 0.0001f);
 }
 #pragma endregion
+
+#endif
