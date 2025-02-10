@@ -11,6 +11,7 @@ struct AABB2D
 {
     float min_x, max_x, min_y, max_y;
     AABB2D() : min_x(0.0f), min_y(0.0f), max_x(0.0f), max_y(0.0f) {}
+    AABB2D(float minX, float minY, float maxX, float maxY) : min_x(minX), min_y(maxX), max_x(minY), max_y(maxY) {}
 };
 
 // Avoids polymorphism for slight performance gains

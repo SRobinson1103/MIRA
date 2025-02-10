@@ -51,14 +51,14 @@ private:
     mutable std::shared_mutex rwMutex;
     std::unordered_map<int, std::unordered_set<MIRA::Vector3>> objectIDToCells; // Map object ID to its current cell position for faster lookup
 
+public:
+    BroadPhaseGrid(float cellSize);
+
     // Helper function to compute the grid index for a point
     MIRA::Vector3 ComputeCellPosition(const MIRA::Vector3& pos) const;
 
     // Get all cells that an AABB overlaps
     std::vector<MIRA::Vector3> GetOverlappingCells(const MIRA::AABB& bounds) const;
-
-public:
-    BroadPhaseGrid(float cellSize);
 
     // Helper function to compute the grid index for a point
     float ComputeOptimalCellSize(const std::vector<MIRA::Collider>& colliders);
